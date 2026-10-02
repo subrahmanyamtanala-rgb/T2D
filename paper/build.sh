@@ -8,4 +8,5 @@ for doc in manuscript highlights cover_letter; do
   latexmk -pdf -interaction=nonstopmode -halt-on-error "$doc.tex" >/dev/null
 done
 latexmk -c >/dev/null
+python make_submission.py
 echo "Built: manuscript.pdf highlights.pdf cover_letter.pdf"
