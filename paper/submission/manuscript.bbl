@@ -194,6 +194,19 @@ G.~S. Collins, K.~G.~M. Moons, P.~Dhiman, et~al., {TRIPOD+AI} statement:
 \newblock \href {https://doi.org/10.1136/bmj-2023-078378}
   {\path{doi:10.1136/bmj-2023-078378}}.
 
+\bibitem{pimadata}
+{National Institute of Diabetes and Digestive and Kidney Diseases}, {P}ima
+  {I}ndians diabetes database, UCI Machine Learning Repository; mirrored at
+  \url{https://www.kaggle.com/datasets/uciml/pima-indians-diabetes-database},
+  accessed October 2026 (1990).
+
+\bibitem{ada2024}
+{American Diabetes Association Professional Practice Committee}, 2. {D}iagnosis
+  and classification of diabetes: {S}tandards of {C}are in {D}iabetes---2024,
+  Diabetes Care 47~(Suppl. 1) (2024) S20--S42.
+\newblock \href {https://doi.org/10.2337/dc24-S002}
+  {\path{doi:10.2337/dc24-S002}}.
+
 \bibitem{matthews1985homa}
 D.~R. Matthews, J.~P. Hosker, A.~S. Rudenski, B.~A. Naylor, D.~F. Treacher,
   R.~C. Turner, Homeostasis model assessment: insulin resistance and
@@ -206,13 +219,6 @@ D.~R. Matthews, J.~P. Hosker, A.~S. Rudenski, B.~A. Naylor, D.~F. Treacher,
 {World Health Organization}, Obesity: Preventing and managing the global
   epidemic. {R}eport of a {WHO} consultation, WHO Technical Report Series 894,
   World Health Organization, Geneva (2000).
-
-\bibitem{ada2024}
-{American Diabetes Association Professional Practice Committee}, 2. {D}iagnosis
-  and classification of diabetes: {S}tandards of {C}are in {D}iabetes---2024,
-  Diabetes Care 47~(Suppl. 1) (2024) S20--S42.
-\newblock \href {https://doi.org/10.2337/dc24-S002}
-  {\path{doi:10.2337/dc24-S002}}.
 
 \bibitem{platt1999}
 J.~C. Platt, Probabilistic outputs for support vector machines and comparisons

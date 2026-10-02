@@ -1,0 +1,200 @@
+%% Supplementary material for the CBM submission. Build: latexmk -pdf supplementary.tex
+\documentclass[11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs,tabularx,array,longtable}
+\usepackage{graphicx,xcolor}
+\usepackage{pdflscape}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,backgrounds}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
+\usepackage[font=small,labelfont=bf]{caption}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\thesection}{S\arabic{section}}
+\renewcommand{\theequation}{S\arabic{equation}}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\definecolor{ink2}{HTML}{52514E}
+\definecolor{edge}{HTML}{898781}
+\definecolor{accent}{HTML}{2A78D6}
+\definecolor{tint}{HTML}{F0EFEC}
+
+\title{Supplementary material for\\[4pt]\large ``Leakage-controlled stacking and recursive feature elimination for type~2 diabetes prediction: a rigorous evaluation on the PIMA dataset''}
+\author{Subrahmanyam Tanala}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Validation design: where each loop runs}
+
+Figure~\ref{fig:nested} shows the complete validation design. There are three nested levels. The \emph{outer} level is the 5$\times$10-fold repeated cross-validation used for model comparison. Within each outer training part there are two \emph{inner} levels: the 5-fold cross-validation that RFECV uses to choose the subset size, and the 5-fold split that produces out-of-fold probabilities for the stacking meta-learner. The 154-patient hold-out set is separated before any modelling and is used once, by the final pipeline refitted on all 614 development patients.
+
+\begin{figure}[!htbp]
+\centering
+\begin{tikzpicture}[
+  font=\sffamily\small, >={Stealth[length=2mm]},
+  every node/.append style={execute at begin node={\hyphenpenalty=10000\relax}},
+  box/.style={draw=edge, rounded corners=3pt, align=center, minimum height=9mm, inner sep=4pt, line width=0.5pt, fill=white, text width=46mm},
+  key/.style={box, draw=accent, line width=1pt, fill=accent!8},
+  note/.style={font=\sffamily\scriptsize, text=ink2, align=center},
+  arr/.style={->, draw=edge, line width=0.6pt}]
+\node[box, text width=34mm] (data) at (5.2,0) {PIMA cohort\\{\scriptsize\color{ink2} $n=768$, 268 events}};
+\node[box] (dev) at (0,-1.8) {Development set\\{\scriptsize\color{ink2} $n=614$ (80\%), 214 events}};
+\node[box, draw=accent, dashed, text width=36mm] (hold) at (12,-1.8) {Hold-out set\\{\scriptsize\color{ink2} $n=154$ (20\%), 54 events}\\{\scriptsize\color{accent} locked until the end}};
+\draw[arr] (data) -- node[note, above left] {stratified split, seed 42} (dev);
+\draw[arr] (data) -- (hold);
+\node[box] (outer) at (0,-3.6) {\textbf{Outer loop}: stratified 10-fold\\CV $\times$ 5 repeats (50 folds)};
+\draw[arr] (dev) -- (outer);
+\node[box] (prep) at (0,-5.6) {Fit imputer, derived features and scaler on the 9/10 training part};
+\node[key] (rfe) at (0,-7.0) {RFECV: \textbf{inner} 5-fold CV\\{\scriptsize\color{ink2} chooses the subset size}};
+\node[key] (stk) at (0,-8.4) {Stacking: \textbf{inner} 5-fold OOF\\{\scriptsize\color{ink2} trains the meta-learner}};
+\begin{scope}[on background layer]
+\node[draw=edge, dashed, rounded corners=4pt, fill=tint, inner sep=3mm, fit=(prep)(rfe)(stk), label={[note, anchor=west, align=left]east:inside every\\outer training\\part (9/10)}] (inner) {};
+\end{scope}
+\draw[arr] (outer) -- (inner);
+\draw[arr] (prep) -- (rfe); \draw[arr] (rfe) -- (stk);
+\node[box] (score) at (0,-10.4) {Score the 1/10 validation fold\\{\scriptsize\color{ink2} with all steps already fitted}};
+\draw[arr] (inner) -- (score);
+\node[box] (agg) at (0,-12.0) {50 fold estimates $\to$ corrected CIs, corrected $t$-tests, Holm};
+\draw[arr] (score) -- (agg);
+\node[box] (refit) at (8.5,-3.6) {Refit the full pipeline on all 614 development patients};
+\draw[arr] (dev.east) -| (refit.north);
+\node[box] (eval) at (8.5,-7.0) {Score hold-out \textbf{once}: DeLong, bootstrap CIs, calibration, DCA, SHAP};
+\draw[arr] (refit) -- (eval);
+\draw[arr] (hold.south) |- (eval.east);
+\node[box] (thr) at (8.5,-10.4) {Thresholds for 80--95\% sensitivity from development OOF predictions};
+\draw[arr] (score) -- node[note, above] {OOF predictions} (thr);
+\draw[arr] (thr) -- node[note, right] {applied unchanged} (eval);
+\end{tikzpicture}
+\caption{Nested validation design. Blue boxes mark the two inner resampling loops that run inside every outer training part. Nothing from an outer validation fold or from the hold-out set is used to fit any step.}
+\label{fig:nested}
+\end{figure}
+
+\section{Statistical testing procedure}
+
+\paragraph{Repeated cross-validation}
+Let $x_{rk}$ be the value of a metric on fold $k$ of repeat $r$ ($r=1,\dots,5$; $k=1,\dots,10$; $J=50$). The point estimate is $\bar x = J^{-1}\sum_{r,k} x_{rk}$. Fold estimates share most of their training data, so the naive variance $s^2/J$ is too small. Following Nadeau and Bengio, we use
+\begin{equation}
+\widehat{\operatorname{Var}}(\bar x) = \left(\frac{1}{J} + \frac{n_{\mathrm{test}}}{n_{\mathrm{train}}}\right) s^2, \qquad \frac{n_{\mathrm{test}}}{n_{\mathrm{train}}} = \frac{1}{9},
+\end{equation}
+with $s^2$ the sample variance of the $J$ fold estimates. 95\% confidence intervals are $\bar x \pm t_{0.975,\,J-1}\sqrt{\widehat{\operatorname{Var}}}$.
+
+\paragraph{Paired comparisons}
+For a configuration $A$ and the reference $B$ (logistic regression on all features), $d_{rk} = x^{A}_{rk} - x^{B}_{rk}$ is computed on identical folds. The corrected resampled statistic is $t = \bar d / \sqrt{(1/J + 1/9)\,s_d^2}$, referred to a $t$ distribution with $J-1 = 49$ degrees of freedom (two-sided). The 22 $p$-values (11 learners $\times$ 2 feature sets, plus LR-ranked RFECV, minus the reference) are adjusted with the Holm step-down procedure.
+
+\paragraph{Why this test}
+The corrected resampled $t$-test is designed for exactly this setting, where fold estimates from repeated $k$-fold cross-validation are correlated. In simulation studies it keeps the type~I error close to the nominal level and replicates well across random partitions, whereas the uncorrected paired $t$-test is anti-conservative. Alternatives such as a nested bootstrap of the whole pipeline or Bayesian correlated $t$-tests are valid. However, a nested bootstrap would have required thousands of refits of RFECV and the stack (about 45~s each), and the conclusions here are far from any decision boundary: the stacking--logistic-regression difference is $+0.001$ with an adjusted $p = 1.00$.
+
+\paragraph{Hold-out set}
+ROC-AUC confidence intervals and pairwise comparisons on the 154 hold-out patients use DeLong's non-parametric covariance (fast mid-rank implementation), with Holm adjustment over six comparisons against stacking + RFECV. All other metrics use 95\% percentile bootstrap intervals from 2000 resamples of hold-out patients; resamples containing a single class are discarded.
+
+\paragraph{Calibration and thresholds}
+The calibration intercept is estimated from $\operatorname{logit} P(y=1) = a + \operatorname{logit}\hat p$ (offset model) and the slope from $\operatorname{logit} P(y=1) = a' + b\operatorname{logit}\hat p$, both by Newton--Raphson maximum likelihood. For a target sensitivity $s$, the threshold is the largest value $t$ for which at least $\lceil s\,n_+\rceil$ of the $n_+$ development-set positives have an out-of-fold probability (averaged over the five repeats) of at least $t$.
+
+\section{Full cross-validated results}
+
+\begin{landscape}
+\begin{table}[p]
+\centering
+\caption{All 23 configurations from 5$\times$10-fold repeated cross-validation on the development set ($n=614$). Means with Nadeau--Bengio corrected 95\% CIs beneath. ``+ RFECV'' is the common random-forest-ranked RFECV subset. The last two columns give the unadjusted and Holm-adjusted corrected resampled $t$-test $p$-values for the ROC-AUC difference from logistic regression on all features. Threshold-based metrics use 0.5.}
+\label{tab:s-cv}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lrcccccccccrr}
+\toprule
+Model & Feat. & Acc. & Bal.\ acc. & Prec. & Sens. & Spec. & F1 & MCC & ROC-AUC & Brier & $p$ & $p_{\mathrm{Holm}}$ \\
+\midrule
+\input{tables/supp_cv_all.tex}
+\end{tabular}
+\end{table}
+\end{landscape}
+
+\section{Full hold-out results}
+
+\begin{landscape}
+\begin{table}[p]
+\centering
+\caption{All hold-out metrics ($n=154$, 54 events) at a 0.5 threshold. 95\% CIs beneath: DeLong for ROC-AUC, percentile bootstrap (2000 resamples) otherwise. AP, average precision; Int., calibration intercept; Slope, calibration slope.}
+\label{tab:s-holdout}
+\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{lcccccccccccc}
+\toprule
+Model & Acc. & Bal.\ acc. & Prec. & Sens. & Spec. & F1 & MCC & ROC-AUC & Brier & AP & Int. & Slope \\
+\midrule
+\input{tables/supp_holdout_all.tex}
+\end{tabular}
+\end{table}
+\end{landscape}
+
+\section{Feature-selection frequencies}
+
+\begin{table}[!htbp]
+\centering
+\caption{Percentage of the 50 outer folds in which each candidate predictor was retained by the common random-forest-ranked RFECV and by coefficient-ranked RFECV for logistic regression. Derived features are deterministic functions of the original variables.}
+\label{tab:s-selection}
+\small
+\begin{tabular}{llrr}
+\toprule
+Predictor & Type & RF-ranked (\%) & LR-ranked (\%) \\
+\midrule
+\input{tables/supp_selection.tex}
+\end{tabular}
+\end{table}
+
+\section{TRIPOD+AI reporting map}
+
+Table~\ref{tab:tripod} maps the main TRIPOD+AI reporting domains (Collins et al., BMJ 2024;385:e078378) to the manuscript. The domain descriptions are paraphrased. Before submission, the author should complete the official 27-item checklist, available from the TRIPOD website, using this map.
+
+\begin{table}[!htbp]
+\centering
+\caption{TRIPOD+AI domains and where they are addressed (main text section or this supplement).}
+\label{tab:tripod}
+\small
+\begin{tabularx}{\linewidth}{lL}
+\toprule
+Domain (paraphrased) & Where addressed \\
+\midrule
+Title and structured abstract & Title; Abstract \\
+Background, rationale and objectives & Sections 1--2 \\
+Data source, setting and participants & Section 3.1 \\
+Outcome definition and timing & Section 3.1 (Outcome definition and intended setting); Section 5.5 \\
+Predictors, including derived features & Section 3.1; Section 3.3; Table 2 \\
+Sample size & Section 3.1; Section 5.5 (limitation) \\
+Missing data & Section 3.2; Section 3.9; Section 4.6; Section 5.4; Table 8 \\
+Data preparation and leakage control & Section 3; Fig.~1; Fig.~S1 \\
+Model types, hyperparameters and building & Sections 3.4--3.5; Table 3 \\
+Class imbalance handling & Section 3.2 (balanced class weights); Section 4.4 (calibration effect) \\
+Internal validation design & Section 3.6; Fig.~S1; Section S2 \\
+Performance measures (discrimination, calibration, utility) & Sections 3.7--3.8; Section S2 \\
+Fairness across subgroups & Not assessed: single-sex, single-ethnicity cohort (Section 5.5) \\
+Results: participants and model specification & Section 3.1; Section 4; Tables S1--S3 \\
+Results: performance with uncertainty & Tables 4--8; Tables S1--S2 \\
+Interpretation, limitations and usability & Section 5 \\
+Explainability & Section 3.10; Section 4.7; Fig.~7 \\
+Ethics, funding and conflicts & Declarations \\
+Protocol, registration, patient and public involvement & Not applicable or not done (retrospective analysis of public data) \\
+Data and code availability & Data and code availability statement; Section S6 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Software environment and reproduction}
+
+All results were produced by repository commit \texttt{e23102d} of \url{https://github.com/subrahmanyamtanala-rgb/T2D} with Python 3.11, scikit-learn 1.9.1, XGBoost 3.2.0, LightGBM 4.7.0, SHAP, NumPy, pandas and SciPy, using random seed 42 throughout. The dataset is included in the repository as \texttt{data/diabetes.csv}; it is the 768-record PIMA Indians Diabetes Database with a header row added. To reproduce:
+
+\begin{verbatim}
+pip install -r requirements.txt shap
+python -m t2d.analysis --stage cv        # ~40 min on 4 CPU cores
+python -m t2d.analysis --stage holdout   # ~7 min
+python -m t2d.analysis --stage missing   # ~35 min
+paper/build.sh                           # all tables, figures and PDFs
+\end{verbatim}
+
+Fold-level metrics, out-of-fold predictions, hold-out predictions and SHAP values are provided in \texttt{results/revision/}.
+
+\end{document}

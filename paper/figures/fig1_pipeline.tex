@@ -35,7 +35,7 @@
   \node[draw=edge, fill=tint, rounded corners=3pt, inner xsep=3mm, inner ysep=5mm, yshift=2.5mm, fit=(c1)(c8), label={[anchor=north west, font=\sffamily\small\bfseries, text=ink]north west:Level 0: eight base learners}] (lvl0) {};
 \end{scope}
 \node[stage, right=16mm of lvl0] (meta) {Meta-learner\\[-1pt]{\scriptsize\color{ink2} logistic regression}};
-\node[stage, right=5mm of meta, minimum width=20mm] (out) {$\hat p$(T2DM)\\[-1pt]{\scriptsize\color{ink2} risk estimate}};
+\node[stage, right=5mm of meta, minimum width=20mm] (out) {$\hat p$(T2DM)\\[-1pt]{\scriptsize\color{ink2} predicted probability}};
 \draw[arr] (rfe.south) -- ++(0,-5mm) -| node[pos=0.25, above, sub] {selected features only} (lvl0.north);
 \draw[arr] (lvl0) -- node[above, sub, align=center] {OOF\\[-2pt]probabilities} (meta);
 \draw[arr] (meta) -- (out);

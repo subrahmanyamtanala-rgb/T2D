@@ -1,6 +1,6 @@
 \FloatBarrier
 \subsection{Sensitivity to missing-data handling}
-The conclusions were robust to the imputation strategy (Table~\ref{tab:missing}). With iterative or $k$-NN imputation, ROC-AUC changed by at most $+0.005$ relative to median imputation for both logistic regression and RFECV + stacking (all $p \geq 0.45$). Adding missingness indicators did not help. It lowered the ROC-AUC of logistic regression slightly ($-0.010$, $p = 0.39$) and left RFECV + stacking unchanged ($-0.002$, $p = 0.50$), and RFECV retained on average only 1.2 of the five indicators. Under every strategy, stacking and logistic regression remained within 0.005 of each other.
+The conclusions were robust to the imputation strategy (Table~\ref{tab:missing}). With iterative or $k$-NN imputation, ROC-AUC changed by at most $+0.005$ relative to median imputation for both logistic regression and stacking + RFECV (all $p \geq 0.45$). Adding missingness indicators did not help. It lowered the ROC-AUC of logistic regression slightly ($-0.010$, $p = 0.39$) and left stacking + RFECV unchanged ($-0.002$, $p = 0.50$), and RFECV retained on average only 1.2 of the five indicators. Under every strategy, stacking and logistic regression remained within 0.005 of each other.
 
 \begin{table*}[!htbp]
 \centering

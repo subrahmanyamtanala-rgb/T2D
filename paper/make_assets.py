@@ -281,6 +281,46 @@ def table_missing(res, out):
     (out / "tab_missing.tex").write_text("\n".join(rows) + "\n\\bottomrule\n")
 
 
+# --------------------------------------------------------- supplementary tables
+SUPP_METRICS = [("accuracy", "Acc."), ("balanced_accuracy", "Bal. acc."), ("precision", "Prec."), ("recall", "Sens."),
+                ("specificity", "Spec."), ("f1", "F1"), ("mcc", "MCC"), ("roc_auc", "ROC-AUC"), ("brier", "Brier")]
+
+
+def table_supp_cv(res, out):
+    s = pd.read_csv(res / "cv_summary.csv")
+    rows = []
+    for _, r in s.iterrows():
+        name = MODEL_NAME[r.model] + (" + RFECV" if r.rfecv and r.model != "lr_own_rfecv" else "")
+        rows.append(f"{name} & {r.n_features:.1f} & " + " & ".join(f"{r[m + '_mean']:.3f}" for m, _ in SUPP_METRICS)
+                    + f" & {pfmt(r.roc_auc_p_vs_lr) if not (r.model == 'lr' and not r.rfecv) else '--'}"
+                    + f" & {pfmt(r.roc_auc_p_holm) if not (r.model == 'lr' and not r.rfecv) else '--'}" + r" \\")
+        rows.append(cirow("", "", *[lohi(r[m + "_lo"], r[m + "_hi"]) for m, _ in SUPP_METRICS], "", ""))
+    (out / "supp_cv_all.tex").write_text("\n".join(rows) + "\n\\bottomrule\n")
+
+
+def table_supp_holdout(res, out):
+    t = pd.read_csv(res / "holdout_metrics_ci.csv").set_index("model")
+    rows = []
+    for m in ["stacking_rfecv", "stacking", "lr", "lr_own_rfecv", "rf_rfecv", "xgb_rfecv", "svm"]:
+        r = t.loc[m]
+        rows.append(f"{LABEL[m]} & " + " & ".join(f"{r[k]:.3f}" for k, _ in SUPP_METRICS)
+                    + f" & {r.ap:.3f} & {signed(r.cal_intercept)} & {r.cal_slope:.3f}" + r" \\")
+        rows.append(cirow("", *[lohi(r[k + "_lo"], r[k + "_hi"]) for k, _ in SUPP_METRICS], "", "", ""))
+    (out / "supp_holdout_all.tex").write_text("\n".join(rows) + "\n\\bottomrule\n")
+
+
+def table_supp_selection(res, out):
+    f = pd.read_csv(res / "cv_selection_frequency.csv")
+    rf = f[f.selector == "rf"].set_index("feature").frequency
+    lr = f[f.selector == "lr"].set_index("feature").frequency
+    feats = ["Pregnancies", "Glucose", "BloodPressure", "SkinThickness", "Insulin", "BMI", "DiabetesPedigreeFunction",
+             "Age", "Glucose_BMI", "Glucose_Age", "HOMA_IR_surrogate", "Insulin_Glucose_Ratio", "BMI_Age", "Obese",
+             "Hyperglycemic", "Pedigree_Age"]
+    rows = [f"\\texttt{{{k.replace('_', chr(92) + '_')}}} & {'original' if i < 8 else 'derived'} & "
+            f"{100 * rf.get(k, 0):.0f} & {100 * lr.get(k, 0):.0f}" + r" \\" for i, k in enumerate(feats)]
+    (out / "supp_selection.tex").write_text("\n".join(rows) + "\n\\bottomrule\n")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--results", type=Path, default=Path("results/revision"))
@@ -292,6 +332,8 @@ def main():
     for fn in (fig_cv_forest, fig_selection, fig_roc_pr, fig_calibration, fig_dca, fig_shap):
         fn(args.results, figs)
     for fn in (table_cv, table_holdout, table_thresholds, table_calibration):
+        fn(args.results, tabs)
+    for fn in (table_supp_cv, table_supp_holdout, table_supp_selection):
         fn(args.results, tabs)
     if (args.results / "missing_summary.csv").exists():
         table_missing(args.results, tabs)

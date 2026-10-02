@@ -12,8 +12,11 @@ This research did not receive any specific grant from funding agencies in the pu
 This study used only the publicly available, de-identified PIMA Indians Diabetes dataset. No new data were collected from human participants, so ethical approval and informed consent were not required.
 
 \section*{Data and code availability}
-The PIMA Indians Diabetes dataset is publicly available. All code, configuration files, fold-level results and the scripts that regenerate every table and figure in this article are available at \url{https://github.com/subrahmanyamtanala-rgb/T2D}. %% TODO(author): make the repository public, or provide an anonymised review link, and add a release DOI (e.g. Zenodo) before submission.
-The full analysis can be reproduced with \texttt{python -m t2d.analysis --stage cv}, \texttt{--stage holdout} and \texttt{--stage missing}, followed by \texttt{python paper/make\_assets.py}.
+The PIMA Indians Diabetes dataset is publicly available~\cite{pimadata} and is included in the repository as \texttt{data/diabetes.csv} (768 records, header row added). All code, configuration files, fold-level results and the scripts that regenerate every table and figure in this article are available at \url{https://github.com/subrahmanyamtanala-rgb/T2D}. %% TODO(author): make the repository public, or provide an anonymised review link, and add a release DOI (e.g. Zenodo) before submission.
+All reported numbers were produced from commit \texttt{e23102d}. The full analysis can be reproduced with \texttt{python -m t2d.analysis --stage cv}, \texttt{--stage holdout} and \texttt{--stage missing}, followed by \texttt{python paper/make\_assets.py}.
+
+\section*{Supplementary material}
+Supplementary material includes the nested validation diagram (Fig.~S1), the full statistical testing procedure, results for all configurations and metrics (Tables S1--S3), a TRIPOD+AI reporting map and reproduction instructions.
 
 \section*{Declaration of generative AI and AI-assisted technologies in the manuscript preparation process}
 %% TODO(author): Elsevier requires this disclosure; edit it to describe your actual use.

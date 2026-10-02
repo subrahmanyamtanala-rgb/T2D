@@ -17,10 +17,10 @@ Stacking ensembles and wrapper feature selection are widely reported for diabete
 \begin{itemize}
   \item every data-dependent step (imputation, feature engineering, scaling, RFECV and stacking) is re-fitted inside each validation split;
   \item eleven learners are compared with and without RFECV using 5$\times$10-fold repeated cross-validation, corrected confidence intervals and multiplicity-adjusted tests, and confirmed on an untouched hold-out set with DeLong tests and bootstrap intervals;
-  \item the evaluation goes beyond discrimination to calibration, sensitivity-targeted screening thresholds, decision curves, a missing-data sensitivity analysis and SHAP explanations.
+  \item the evaluation goes beyond discrimination to calibration, sensitivity-targeted operating thresholds, decision curves, a missing-data sensitivity analysis and SHAP explanations.
 \end{itemize}
 
-The main finding is deliberately reported without overstatement. RFECV produces compact, clinically plausible feature sets, and the stacking ensemble gives the highest observed hold-out sensitivity and MCC. However, it does not discriminate better than regularised logistic regression once validation is leakage-free, and class weighting causes systematic risk overestimation that accuracy-based reporting would hide. We believe these results, together with fully reproducible code, will be useful to readers developing and reviewing clinical prediction models.
+The main finding is deliberately reported without overstatement. RFECV produces compact, clinically plausible feature sets, and the stacking ensemble gives the highest observed hold-out sensitivity and MCC. However, it does not discriminate better than regularised logistic regression once validation is leakage-free, and its class-weighted probabilities are systematically too high, a problem that accuracy-based reporting would hide. The PIMA predictors include 2-h OGTT values, so we present the work as a methodological benchmark of internal validity, not as a deployable screening tool. We believe these results, together with fully reproducible code, will be useful to readers developing and reviewing clinical prediction models.
 
 This manuscript is original, has not been published previously and is not under consideration elsewhere. The author has no competing interests to declare. All code and results are publicly available.
 

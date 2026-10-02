@@ -7,9 +7,9 @@
 \section*{Highlights}
 \begin{itemize}
   \item Imputation, feature selection and stacking were all fitted inside validation.
-  \item Stacking matched but did not beat logistic regression (CV AUC 0.843 vs 0.842).
-  \item RFECV cut inputs by 25\% and kept glucose, BMI and family-history terms.
-  \item Class weighting overestimated risk; calibration must be reported.
+  \item Stacking did not beat logistic regression (CV AUC 0.843 vs 0.842).
+  \item RFECV cut inputs by 25\%, keeping a stable core of glucose and BMI terms.
+  \item Probabilities were too high, consistent with class weighting.
   \item Sensitivity-targeted thresholds transferred from development to hold-out data.
 \end{itemize}
 \end{document}
