@@ -1,0 +1,16 @@
+feature,selection_frequency
+Glucose,1.0
+BMI,1.0
+DiabetesPedigreeFunction,1.0
+Glucose_BMI,1.0
+Glucose_Age,1.0
+HOMA_IR,1.0
+BMI_Age,1.0
+Pedigree_Age,1.0
+Pregnancies,0.6
+BloodPressure,0.6
+SkinThickness,0.6
+Insulin,0.6
+Age,0.6
+Insulin_Glucose_Ratio,0.6
+Hyperglycemic,0.3
