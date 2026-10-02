@@ -226,7 +226,7 @@ paper/build.sh                           # all tables, figures and PDFs
 
 Fold-level metrics, out-of-fold predictions, hold-out predictions and SHAP values are provided in \texttt{results/revision/}.
 
-\paragraph{Reproducibility check} REPRO_PLACEHOLDER
+\paragraph{Reproducibility check} Commit \texttt{881d84f} only renamed the derived feature \texttt{Hyperglycemic} to \texttt{IGT\_2h}; the computation depends on column order, not names. To check reproducibility and the rename, the hold-out stage was re-run in a fresh output directory at that commit. All hold-out predictions, metrics, bootstrap intervals, DeLong tests, thresholds, calibration estimates, decision curves and SHAP summaries matched the reported values to within floating-point rounding (maximum absolute difference $2.2\times10^{-16}$). The 50-fold cross-validation and missing-data stages were not re-run for this check.
 
 \paragraph{Random seeds} Every stochastic operation uses seed 42:
 \begin{itemize}
