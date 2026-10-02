@@ -7,6 +7,7 @@
 \usepackage{booktabs,tabularx,array,longtable}
 \usepackage{graphicx,xcolor}
 \usepackage{pdflscape}
+\usepackage{float}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning,fit,backgrounds}
 \usepackage[hidelinks]{hyperref}
@@ -22,7 +23,7 @@
 \definecolor{accent}{HTML}{2A78D6}
 \definecolor{tint}{HTML}{F0EFEC}
 
-\title{Supplementary material for\\[4pt]\large ``Leakage-controlled stacking and recursive feature elimination for type~2 diabetes prediction: a rigorous evaluation on the PIMA dataset''}
+\title{Supplementary material for\\[4pt]\large ``Leakage-controlled evaluation of stacking and recursive feature elimination for diabetes prediction on the PIMA dataset''}
 \author{Subrahmanyam Tanala}
 \date{}
 
@@ -84,7 +85,7 @@ Let $x_{rk}$ be the value of a metric on fold $k$ of repeat $r$ ($r=1,\dots,5$; 
 with $s^2$ the sample variance of the $J$ fold estimates. 95\% confidence intervals are $\bar x \pm t_{0.975,\,J-1}\sqrt{\widehat{\operatorname{Var}}}$.
 
 \paragraph{Paired comparisons}
-For a configuration $A$ and the reference $B$ (logistic regression on all features), $d_{rk} = x^{A}_{rk} - x^{B}_{rk}$ is computed on identical folds. The corrected resampled statistic is $t = \bar d / \sqrt{(1/J + 1/9)\,s_d^2}$, referred to a $t$ distribution with $J-1 = 49$ degrees of freedom (two-sided). The 22 $p$-values (11 learners $\times$ 2 feature sets, plus LR-ranked RFECV, minus the reference) are adjusted with the Holm step-down procedure.
+For a configuration $A$ and the reference $B$ (logistic regression on all features), $d_{rk} = x^{A}_{rk} - x^{B}_{rk}$ is computed on identical folds. The corrected resampled statistic is $t = \bar d / \sqrt{(1/J + 1/9)\,s_d^2}$, referred to a $t$ distribution with $J-1 = 49$ degrees of freedom (two-sided). The analysis comprises 23 configurations: 11 learners $\times$ 2 feature sets (all 16 predictors or the common RFECV subset) = 22, plus logistic regression with its own LR-ranked RFECV. Each of the 22 non-reference configurations is compared with the reference (logistic regression on all 16 predictors), and the 22 $p$-values are adjusted with the Holm step-down procedure. This comparison set was fixed in the analysis code before the repeated cross-validation was run.
 
 \paragraph{Why this test}
 The corrected resampled $t$-test is designed for exactly this setting, where fold estimates from repeated $k$-fold cross-validation are correlated. In simulation studies it keeps the type~I error close to the nominal level and replicates well across random partitions, whereas the uncorrected paired $t$-test is anti-conservative. Alternatives such as a nested bootstrap of the whole pipeline or Bayesian correlated $t$-tests are valid. However, a nested bootstrap would have required thousands of refits of RFECV and the stack (about 45~s each), and the conclusions here are far from any decision boundary: the stacking--logistic-regression difference is $+0.001$ with an adjusted $p = 1.00$.
@@ -93,7 +94,7 @@ The corrected resampled $t$-test is designed for exactly this setting, where fol
 ROC-AUC confidence intervals and pairwise comparisons on the 154 hold-out patients use DeLong's non-parametric covariance (fast mid-rank implementation), with Holm adjustment over six comparisons against stacking + RFECV. All other metrics use 95\% percentile bootstrap intervals from 2000 resamples of hold-out patients; resamples containing a single class are discarded.
 
 \paragraph{Calibration and thresholds}
-The calibration intercept is estimated from $\operatorname{logit} P(y=1) = a + \operatorname{logit}\hat p$ (offset model) and the slope from $\operatorname{logit} P(y=1) = a' + b\operatorname{logit}\hat p$, both by Newton--Raphson maximum likelihood. For a target sensitivity $s$, the threshold is the largest value $t$ for which at least $\lceil s\,n_+\rceil$ of the $n_+$ development-set positives have an out-of-fold probability (averaged over the five repeats) of at least $t$.
+The calibration intercept is estimated from $\operatorname{logit} P(y=1) = a + \operatorname{logit}\hat p$ (offset model) and the slope from $\operatorname{logit} P(y=1) = a' + b\operatorname{logit}\hat p$, both by Newton--Raphson maximum likelihood. For a target sensitivity $s$, the threshold is the largest value $t$ for which at least $\lceil s\,n_+\rceil$ of the $n_+ = 214$ development-set positives have an out-of-fold probability (averaged over the five repeats) of at least $t$, i.e.\ the $\lceil s\,n_+\rceil$-th largest positive probability. Patients with probability $\geq t$ are flagged, so ties at the threshold are always flagged. The pooled out-of-fold calibration analysis uses all 3070 predictions (614 unique patients $\times$ 5 repeats). The development prevalence is $214/614 = 0.349$ ($\operatorname{logit} = -0.626$).
 
 \section{Full cross-validated results}
 
@@ -133,7 +134,7 @@ Model & Acc. & Bal.\ acc. & Prec. & Sens. & Spec. & F1 & MCC & ROC-AUC & Brier &
 
 \section{Feature-selection frequencies}
 
-\begin{table}[!htbp]
+\begin{table}[H]
 \centering
 \caption{Percentage of the 50 outer folds in which each candidate predictor was retained by the common random-forest-ranked RFECV and by coefficient-ranked RFECV for logistic regression. Derived features are deterministic functions of the original variables.}
 \label{tab:s-selection}
@@ -150,7 +151,7 @@ Predictor & Type & RF-ranked (\%) & LR-ranked (\%) \\
 
 Table~\ref{tab:tripod} maps the main TRIPOD+AI reporting domains (Collins et al., BMJ 2024;385:e078378) to the manuscript. The domain descriptions are paraphrased. Before submission, the author should complete the official 27-item checklist, available from the TRIPOD website, using this map.
 
-\begin{table}[!htbp]
+\begin{table}[H]
 \centering
 \caption{TRIPOD+AI domains and where they are addressed (main text section or this supplement).}
 \label{tab:tripod}
@@ -162,23 +163,51 @@ Domain (paraphrased) & Where addressed \\
 Title and structured abstract & Title; Abstract \\
 Background, rationale and objectives & Sections 1--2 \\
 Data source, setting and participants & Section 3.1 \\
-Outcome definition and timing & Section 3.1 (Outcome definition and intended setting); Section 5.5 \\
+Outcome definition and timing & Section 3.1 (Outcome definition and intended setting); Section 5.6 \\
 Predictors, including derived features & Section 3.1; Section 3.3; Table 2 \\
-Sample size & Section 3.1; Section 5.5 (limitation) \\
+Sample size & Section 3.1; Section 5.6 (limitation) \\
 Missing data & Section 3.2; Section 3.9; Section 4.6; Section 5.4; Table 8 \\
 Data preparation and leakage control & Section 3; Fig.~1; Fig.~S1 \\
 Model types, hyperparameters and building & Sections 3.4--3.5; Table 3 \\
 Class imbalance handling & Section 3.2 (balanced class weights); Section 4.4 (calibration effect) \\
 Internal validation design & Section 3.6; Fig.~S1; Section S2 \\
 Performance measures (discrimination, calibration, utility) & Sections 3.7--3.8; Section S2 \\
-Fairness across subgroups & Not assessed: single-sex, single-ethnicity cohort (Section 5.5) \\
+Fairness across subgroups & Not assessed: single-sex, single-ethnicity cohort (Section 5.6) \\
 Results: participants and model specification & Section 3.1; Section 4; Tables S1--S3 \\
 Results: performance with uncertainty & Tables 4--8; Tables S1--S2 \\
 Interpretation, limitations and usability & Section 5 \\
 Explainability & Section 3.10; Section 4.7; Fig.~7 \\
 Ethics, funding and conflicts & Declarations \\
 Protocol, registration, patient and public involvement & Not applicable or not done (retrospective analysis of public data) \\
-Data and code availability & Data and code availability statement; Section S6 \\
+Data and code availability & Data and code availability statement; Section S8 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Configurations compared}
+
+\begin{table}[H]
+\centering
+\caption{The 23 configurations of the repeated cross-validation. ``Common RFECV'' is the random-forest-ranked subset fitted once per outer fold and shared by all learners. Settings of each learner are given in Table~3 of the main text.}
+\label{tab:s-configs}
+\small
+\begin{tabularx}{\linewidth}{lcLL}
+\toprule
+Learner & In stack & Feature sets & Role \\
+\midrule
+Logistic regression & yes & all 16; common RFECV; LR-ranked RFECV & reference (all 16); learner-specific RFECV check \\
+SVM (RBF, Platt) & yes & all 16; common RFECV & base learner \\
+$k$-NN & yes & all 16; common RFECV & base learner \\
+Random forest & yes & all 16; common RFECV & base learner \\
+Extra trees & yes & all 16; common RFECV & base learner \\
+Gradient boosting & yes & all 16; common RFECV & base learner \\
+XGBoost & yes & all 16; common RFECV & base learner \\
+LightGBM & yes & all 16; common RFECV & base learner \\
+Gaussian naive Bayes & no & all 16; common RFECV & reference learner \\
+Decision tree (depth 5) & no & all 16; common RFECV & reference learner \\
+Stacking (LR meta-learner) & -- & all 16; common RFECV & ensemble under study \\
+\midrule
+\multicolumn{4}{l}{Total: 11 learners $\times$ 2 feature sets = 22, plus LR with LR-ranked RFECV = 23 configurations.} \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -196,5 +225,17 @@ paper/build.sh                           # all tables, figures and PDFs
 \end{verbatim}
 
 Fold-level metrics, out-of-fold predictions, hold-out predictions and SHAP values are provided in \texttt{results/revision/}.
+
+\paragraph{Random seeds} Every stochastic operation uses seed 42:
+\begin{itemize}
+  \item the stratified 80/20 split (\texttt{train\_test\_split});
+  \item the repeated outer folds (\texttt{RepeatedStratifiedKFold}, 10 folds $\times$ 5 repeats; 10 $\times$ 2 for the missing-data analysis);
+  \item the inner 5-fold splits of RFECV and of the stacking meta-learner (\texttt{StratifiedKFold}, shuffled);
+  \item the RFECV random-forest ranker and every learner with a random component (LR, SVM, decision tree, random forest, extra trees, gradient boosting, XGBoost, LightGBM);
+  \item the iterative imputer;
+  \item the bootstrap resampling (NumPy \texttt{default\_rng});
+  \item the 40-patient SHAP background sample (\texttt{DataFrame.sample}).
+\end{itemize}
+The Platt calibration of the SVM uses deterministic, unshuffled internal folds. $k$-NN, naive Bayes and median or $k$-NN imputation are deterministic.
 
 \end{document}

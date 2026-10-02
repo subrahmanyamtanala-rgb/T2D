@@ -44,7 +44,7 @@ Coefficient-ranked RFECV for logistic regression preferred a different, smaller 
 \end{figure}
 
 \FloatBarrier
-\subsection{Hold-out performance}
+\subsection{Internal hold-out performance}
 On the 154 hold-out patients (Table~\ref{tab:holdout}, Fig.~\ref{fig:rocpr}), the stacking + RFECV pipeline reached a ROC-AUC of 0.822 (95\% CI 0.756--0.888), sensitivity 0.815 (0.709--0.915), specificity 0.740 (0.649--0.823), MCC 0.532 (0.403--0.658) and F1 0.710. It correctly identified 44 of 54 patients with diabetes. Among the evaluated configurations it had the highest observed sensitivity, F1 and MCC on this split. However, the confidence intervals of all models overlapped widely. No ROC-AUC difference between the stacking + RFECV pipeline and any comparator was statistically significant (DeLong test; differences from $-0.004$ to $+0.013$; smallest Holm-adjusted $p = 0.89$). Supplementary Table~S2 gives all hold-out metrics. Random forest + RFECV (0.826) and XGBoost + RFECV (0.824) had slightly higher hold-out ROC-AUC, and average precision ranged from 0.683 (logistic regression) to 0.711 (random forest + RFECV).
 
 \begin{table*}[!htbp]

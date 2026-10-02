@@ -10,13 +10,13 @@
 \begin{letter}{The Editor-in-Chief\\Computers in Biology and Medicine}
 \opening{Dear Editor,}
 
-Please consider the enclosed manuscript, ``Leakage-controlled stacking and recursive feature elimination for type~2 diabetes prediction: a rigorous evaluation on the PIMA dataset'', for publication as a Research Article in \emph{Computers in Biology and Medicine}.
+Please consider the enclosed manuscript, ``Leakage-controlled evaluation of stacking and recursive feature elimination for diabetes prediction on the PIMA dataset'', for publication as a Research Article in \emph{Computers in Biology and Medicine}.
 
 Stacking ensembles and wrapper feature selection are widely reported for diabetes prediction, including in this journal, often with very high accuracy on the PIMA Indians Diabetes dataset. Such results are hard to interpret when imputation or feature selection is fitted before validation and when differences between models are not tested statistically. Our study takes a methodological rather than an algorithmic approach:
 
 \begin{itemize}
   \item every data-dependent step (imputation, feature engineering, scaling, RFECV and stacking) is re-fitted inside each validation split;
-  \item eleven learners are compared with and without RFECV using 5$\times$10-fold repeated cross-validation, corrected confidence intervals and multiplicity-adjusted tests, and confirmed on an untouched hold-out set with DeLong tests and bootstrap intervals;
+  \item eleven learners (the eight base learners of the stack, two reference learners and the stack itself) are compared with and without a common RFECV subset using 5$\times$10-fold repeated cross-validation, corrected confidence intervals and multiplicity-adjusted tests, and confirmed on an untouched hold-out set with DeLong tests and bootstrap intervals;
   \item the evaluation goes beyond discrimination to calibration, sensitivity-targeted operating thresholds, decision curves, a missing-data sensitivity analysis and SHAP explanations.
 \end{itemize}
 
