@@ -32,7 +32,7 @@ Model & Features & ROC-AUC & MCC & Sens. & Spec. & Brier & $\Delta$AUC (adj.\ $p
 
 \FloatBarrier
 \subsection{Selected features and their stability}
-Across the 50 outer folds, random-forest-ranked RFECV kept a median of 14 features (interquartile range 8--15; range 7--16). Seven features were kept in every fold: glucose, BMI and the engineered \texttt{Glucose\_BMI}, \texttt{Glucose\_Age}, \texttt{BMI\_Age}, \texttt{HOMA\_IR\_surrogate} and \texttt{Pedigree\_Age} (Fig.~\ref{fig:selection}). The diabetes pedigree function was kept in 94\% of folds. The thresholded flags were the weakest candidates: \texttt{Obese} was kept in 6\% of folds and \texttt{IGT_2h} in 38\%. They largely duplicate information already carried by BMI and glucose.
+Across the 50 outer folds, random-forest-ranked RFECV kept a median of 14 features (interquartile range 8--15; range 7--16). Seven features were kept in every fold: glucose, BMI and the engineered \texttt{Glucose\_BMI}, \texttt{Glucose\_Age}, \texttt{BMI\_Age}, \texttt{HOMA\_IR\_surrogate} and \texttt{Pedigree\_Age} (Fig.~\ref{fig:selection}). The diabetes pedigree function was kept in 94\% of folds. The thresholded flags were the weakest candidates: \texttt{Obese} was kept in 6\% of folds and \texttt{IGT\_2h} in 38\%. They largely duplicate information already carried by BMI and glucose.
 
 Coefficient-ranked RFECV for logistic regression preferred a different, smaller subset (median 10.5 features; range 3--14). It kept glucose in every fold, and age, pregnancies and the pedigree function in more than 90\% of folds. It rarely kept blood pressure (2\%) and never kept skin-fold thickness. A core of glycaemic, adiposity and diabetes-pedigree predictors was therefore retained by both selectors, but the exact subset depended on the ranking criterion.
 
@@ -128,7 +128,7 @@ Model & Target & Threshold & Sensitivity & Specificity & PPV & NPV & Flagged \\
 
 \FloatBarrier
 \subsection{Explanation of predictions}
-Glucose dominated the SHAP explanations of the stacking + RFECV pipeline (mean $|\mathrm{SHAP}| = 0.170$ on the probability scale), followed by BMI (0.074), age (0.055), the diabetes pedigree function (0.038) and pregnancies (0.028) (Fig.~\ref{fig:shap}). Insulin, skin-fold thickness and blood pressure contributed little (at most 0.015). Higher glucose, BMI, age and pedigree values consistently increased the predicted probability. These inputs contributed most to the model's predictions, in directions that agree with established risk factors; as model attributions, they do not measure causal effects.
+Glucose dominated the SHAP explanations of the stacking + RFECV pipeline (mean $|\mathrm{SHAP}| = 0.170$ on the probability scale), followed by BMI (0.074), age (0.055), the diabetes pedigree function (0.038) and pregnancies (0.028) (Fig.~\ref{fig:shap}). Insulin, skin-fold thickness and blood pressure contributed little (at most 0.015). Higher glucose, BMI, age and pedigree values consistently increased the predicted probability. These inputs contributed most to the model's predictions, in directions that agree with established risk factors; as model attributions, they do not measure causal effects. Because the outcome itself is largely defined by 2-h post-load glucose, the dominance of glucose in particular should not be interpreted as evidence of independent causal importance.
 
 \begin{figure}[!htbp]
   \centering

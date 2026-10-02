@@ -23,7 +23,7 @@
 \definecolor{accent}{HTML}{2A78D6}
 \definecolor{tint}{HTML}{F0EFEC}
 
-\title{Supplementary material for\\[4pt]\large ``Leakage-controlled evaluation of stacking and recursive feature elimination for diabetes prediction on the PIMA dataset''}
+\title{Supplementary material for\\[4pt]\large ``Leakage-controlled evaluation of stacking and recursive feature elimination for diabetes outcome prediction on the PIMA dataset''}
 \author{Subrahmanyam Tanala}
 \date{}
 
@@ -214,7 +214,7 @@ Stacking (LR meta-learner) & -- & all 16; common RFECV & ensemble under study \\
 
 \section{Software environment and reproduction}
 
-All results were produced by repository commit \texttt{e23102d} of \url{https://github.com/subrahmanyamtanala-rgb/T2D} with Python 3.11, scikit-learn 1.9.1, XGBoost 3.2.0, LightGBM 4.7.0, SHAP, NumPy, pandas and SciPy, using random seed 42 throughout. The dataset is included in the repository as \texttt{data/diabetes.csv}; it is the 768-record PIMA Indians Diabetes Database with a header row added. To reproduce:
+All results were produced by commit \texttt{e23102d} of \url{https://github.com/subrahmanyamtanala-rgb/T2D} with Python 3.11, scikit-learn 1.9.1, XGBoost 3.2.0, LightGBM 4.7.0, SHAP, NumPy, pandas and SciPy, using random seed 42 throughout. The dataset is included in the repository as \texttt{data/diabetes.csv}. It was obtained from the public mirror \url{https://raw.githubusercontent.com/jbrownlee/Datasets/master/pima-indians-diabetes.data.csv}, a header-less copy of the 768-record UCI PIMA Indians Diabetes Database, and a header row with the standard column names was added. The file has 768 records and 268 positive outcomes, and its SHA-256 checksum is \texttt{3c7023e0935097ac63e03c6f398928b6dfce30974d5591d3af09a9661876d9fe}. Before submission, the author should confirm that it matches the UCI or Kaggle distribution, which have the same record and class counts. To reproduce:
 
 \begin{verbatim}
 pip install -r requirements.txt shap
@@ -225,6 +225,8 @@ paper/build.sh                           # all tables, figures and PDFs
 \end{verbatim}
 
 Fold-level metrics, out-of-fold predictions, hold-out predictions and SHAP values are provided in \texttt{results/revision/}.
+
+\paragraph{Reproducibility check} REPRO_PLACEHOLDER
 
 \paragraph{Random seeds} Every stochastic operation uses seed 42:
 \begin{itemize}
