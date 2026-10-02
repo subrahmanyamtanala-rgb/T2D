@@ -3,3 +3,11 @@ __pycache__/
 .pytest_cache/
 *.joblib
 .venv/
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.spl

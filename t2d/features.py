@@ -25,8 +25,8 @@ class ClinicalFeatureEngineer(BaseEstimator, TransformerMixin):
             return X
         X["Glucose_BMI"] = X["Glucose"] * X["BMI"] / 100.0
         X["Glucose_Age"] = X["Glucose"] * X["Age"] / 100.0
-        # HOMA-IR surrogate (glucose mg/dL * insulin uU/mL / 405).
-        X["HOMA_IR"] = X["Glucose"] * X["Insulin"] / 405.0
+        # HOMA-IR *surrogate*: PIMA has 2-h post-load values, not the fasting values HOMA-IR requires.
+        X["HOMA_IR_surrogate"] = X["Glucose"] * X["Insulin"] / 405.0
         X["Insulin_Glucose_Ratio"] = X["Insulin"] / X["Glucose"].clip(lower=1.0)
         X["BMI_Age"] = X["BMI"] * X["Age"] / 100.0
         X["Obese"] = (X["BMI"] >= 30).astype(float)
@@ -40,7 +40,7 @@ class ClinicalFeatureEngineer(BaseEstimator, TransformerMixin):
             names += [
                 "Glucose_BMI",
                 "Glucose_Age",
-                "HOMA_IR",
+                "HOMA_IR_surrogate",
                 "Insulin_Glucose_Ratio",
                 "BMI_Age",
                 "Obese",

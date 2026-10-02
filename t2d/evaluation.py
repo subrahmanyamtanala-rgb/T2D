@@ -42,9 +42,13 @@ def compare_models(preprocess, selector, classifiers, X, y, n_splits=10, n_repea
     """Cross-validate every classifier with and without RFECV.
 
     For each outer fold the preprocessing and the RFECV selector are fitted on
-    the training part only, then shared by all classifiers in that fold. This
-    is equivalent to cross-validating a full ``Pipeline`` per classifier, but
-    runs RFECV once per fold instead of once per (fold, classifier).
+    the training part only, then the selected subset is shared by all
+    classifiers in that fold. This is a *common* feature-selection protocol: the
+    subset is optimised with the selector's own ranking estimator (a random
+    forest by default), not separately for each classifier. It is not
+    equivalent to cross-validating a learner-specific RFECV pipeline per
+    classifier, but it runs RFECV once per fold instead of once per
+    (fold, classifier).
 
     Returns (per-fold results DataFrame, Counter of how often each feature was
     selected, number of folds).

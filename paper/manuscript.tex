@@ -1,0 +1,62 @@
+%% Manuscript for submission to Computers in Biology and Medicine (Elsevier).
+%% Build: latexmk -pdf manuscript.tex   (or ./build.sh, which also builds figures, highlights and cover letter)
+\documentclass[preprint,12pt,authoryear=false]{elsarticle}
+
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{lineno}
+\usepackage[hidelinks]{hyperref}
+\usepackage{siunitx}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{rotating}
+
+\graphicspath{{figures/}}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\biboptions{sort&compress}
+\modulolinenumbers[5]
+\linenumbers
+
+\journal{Computers in Biology and Medicine}
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{Leakage-controlled stacking and recursive feature elimination for type~2 diabetes prediction: a rigorous evaluation on the PIMA dataset}
+
+%% TODO(author): confirm name, affiliation and ORCID before submission.
+\author[anits]{Subrahmanyam Tanala\corref{cor1}}
+\ead{subrahmanyam.eee@anits.edu.in}
+\cortext[cor1]{Corresponding author.}
+\affiliation[anits]{organization={Department of Electrical and Electronics Engineering, Anil Neerukonda Institute of Technology and Sciences (ANITS)},
+            city={Visakhapatnam},
+            state={Andhra Pradesh},
+            country={India}}
+
+\input{sections/abstract}
+
+\begin{keyword}
+Type 2 diabetes mellitus \sep Stacked generalisation \sep Recursive feature elimination \sep Data leakage \sep Calibration \sep Decision curve analysis \sep PIMA Indians Diabetes
+\end{keyword}
+
+\end{frontmatter}
+
+\input{sections/introduction}
+\input{sections/related}
+\input{sections/methods}
+\input{sections/results}
+\input{sections/discussion}
+\input{sections/conclusion}
+\input{sections/declarations}
+
+\bibliographystyle{elsarticle-num}
+\bibliography{references}
+
+\end{document}

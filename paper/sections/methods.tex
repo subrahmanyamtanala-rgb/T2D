@@ -1,0 +1,122 @@
+\section{Materials and methods}
+\label{sec:methods}
+
+Fig.~\ref{fig:pipeline} summarises the framework. This study is reported following the TRIPOD+AI recommendations where applicable~\cite{collins2024tripodai}.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{fig1_pipeline.pdf}
+  \caption{Proposed pipeline. Imputation, feature engineering, standardisation and RFECV are fitted on the training part of each split only. The features retained by RFECV are passed to eight heterogeneous base learners, whose out-of-fold (OOF) probabilities train a logistic-regression meta-learner.}
+  \label{fig:pipeline}
+\end{figure*}
+
+\subsection{Data}
+We used the PIMA Indians Diabetes dataset~\cite{smith1988adap}: 768 women of Pima heritage aged at least 21 years, of whom 268 (34.9\%) had diabetes. Each record contains eight predictors: number of pregnancies, 2-h plasma glucose concentration in an oral glucose tolerance test (OGTT; mg/dL), diastolic blood pressure (mm\,Hg), triceps skin-fold thickness (mm), 2-h serum insulin (\textmu U/mL), BMI (kg/m$^2$), diabetes pedigree function and age (years). The outcome is diabetes onset. The data are publicly available and de-identified.
+
+\subsection{Missing values}
+Zero is physiologically impossible for glucose, blood pressure, skin-fold thickness, insulin and BMI, so these zeros were recoded as missing (Table~\ref{tab:missing-counts}). In the primary analysis, missing values were replaced by the median of the training data in each split. Because insulin is missing for almost half of the patients, we also compared three alternatives in a sensitivity analysis (Section~\ref{sec:missing-methods}).
+
+\begin{table}[t]
+\centering
+\caption{Physiologically impossible zero values recoded as missing ($n = 768$).}
+\label{tab:missing-counts}
+\begin{tabular}{lrr}
+\toprule
+Predictor & Missing ($n$) & Missing (\%) \\
+\midrule
+Insulin & 374 & 48.7 \\
+Skin-fold thickness & 227 & 29.6 \\
+Diastolic blood pressure & 35 & 4.6 \\
+BMI & 11 & 1.4 \\
+Glucose & 5 & 0.7 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Feature engineering}
+Eight derived features encoding known T2DM risk interactions were added after imputation, giving 16 candidates for RFECV (Table~\ref{tab:features}). The insulin-resistance term follows the HOMA-IR formula~\cite{matthews1985homa}, but PIMA records 2-h post-load rather than fasting glucose and insulin. We therefore name it \texttt{HOMA\_IR\_surrogate} and do not interpret it as clinical HOMA-IR. The binary thresholds follow the WHO obesity cut-off~\cite{who2000obesity} and the 2-h OGTT threshold for impaired glucose tolerance~\cite{ada2024}.
+
+\begin{table}[t]
+\centering
+\caption{Derived features. All continuous inputs are measured after imputation.}
+\label{tab:features}
+\small
+\begin{tabularx}{\linewidth}{lll}
+\toprule
+Feature & Definition & Rationale \\
+\midrule
+\texttt{Glucose\_BMI} & Glucose $\times$ BMI / 100 & Joint glycaemia--adiposity effect \\
+\texttt{Glucose\_Age} & Glucose $\times$ Age / 100 & Glycaemic risk rising with age \\
+\texttt{HOMA\_IR\_surrogate} & Glucose $\times$ Insulin / 405 & Insulin-resistance surrogate (post-load) \\
+\texttt{Insulin\_Glucose\_Ratio} & Insulin / Glucose & Insulin response relative to glucose \\
+\texttt{BMI\_Age} & BMI $\times$ Age / 100 & Cumulative adiposity exposure \\
+\texttt{Obese} & $1$ if BMI $\geq 30$ & WHO obesity threshold \\
+\texttt{Hyperglycemic} & $1$ if Glucose $\geq 140$ & Impaired glucose tolerance threshold \\
+\texttt{Pedigree\_Age} & Pedigree $\times$ Age & Familial risk expressed over time \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Recursive feature elimination with cross-validation}
+All features were standardised with training statistics. RFECV started from the 16 candidates. At each step it fitted a random forest (200 trees, balanced class weights), ranked features by impurity-based importance and removed the least important one. Each subset size was scored by stratified 5-fold cross-validated ROC-AUC within the training data, and the size with the highest mean score was retained (minimum three features).
+
+\paragraph{Common versus learner-specific selection}
+In the model comparison, RFECV was fitted once within each outer training fold using the random-forest ranking estimator, and the resulting subset was supplied to every candidate learner. This gives all learners an identical, leakage-free feature-selection protocol at the cost of one RFECV fit per fold. The subset is optimised with the random-forest ranking criterion, not separately for each learner. It is therefore \emph{not} equivalent to cross-validating a learner-specific RFECV pipeline for every classifier. To gauge the effect of this choice, we also evaluated logistic regression with its own RFECV ranked by absolute standardised coefficients (``LR-ranked RFECV'').
+
+\subsection{Stacking ensemble}
+The level-0 learners were chosen for diversity of inductive bias (Table~\ref{tab:learners}). The level-1 meta-learner was an L2-regularised logistic regression with balanced class weights. It was trained on the positive-class probabilities produced by each base learner for held-out samples in an internal stratified 5-fold split~\cite{wolpert1992stacked,ting1999issues}. The base learners were then refitted on all training data for prediction. Gaussian naive Bayes and a depth-5 decision tree were evaluated as additional reference learners but were not part of the stack. Hyperparameters were fixed a priori at common defaults (Table~\ref{tab:learners}) and were not tuned, so that no tuning loop could leak into the evaluation.
+
+\begin{table}[t]
+\centering
+\caption{Level-0 learners and their fixed settings.}
+\label{tab:learners}
+\small
+\begin{tabularx}{\linewidth}{llL}
+\toprule
+Learner & Family & Settings \\
+\midrule
+Logistic regression (LR) & Linear & L2, $C=1$, balanced class weights \\
+SVM & Kernel & RBF, $C=1$, balanced weights, Platt-calibrated~\cite{platt1999} \\
+$k$-nearest neighbours & Instance-based & $k=15$, distance-weighted \\
+Random forest~\cite{breiman2001rf} & Bagged trees & 300 trees, min.\ leaf 2, balanced weights \\
+Extra trees & Randomised trees & 300 trees, min.\ leaf 2, balanced weights \\
+Gradient boosting & Boosted trees & 200 trees, depth 3, learning rate 0.05 \\
+XGBoost~\cite{chen2016xgboost} & Boosted trees & 300 trees, depth 3, rate 0.05, subsample 0.8 \\
+LightGBM~\cite{ke2017lightgbm} & Boosted trees & 300 trees, 15 leaves, rate 0.05, balanced weights \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Validation design}
+The data were split once into a stratified 80\% development set (614 patients, 214 with diabetes) and a 20\% hold-out set (154 patients, 54 with diabetes), with random seed 42. The hold-out set was not used for any modelling decision.
+
+\paragraph{Repeated cross-validation}
+On the development set, all 11 learners were compared with and without the common RFECV subset using stratified 10-fold cross-validation repeated five times (50 folds). Within each fold, imputation, feature engineering, standardisation and RFECV were fitted on the nine training folds only. Because fold estimates from overlapping training sets are correlated, we report the mean of each metric with a 95\% confidence interval based on the Nadeau--Bengio corrected variance~\cite{nadeau2003inference},
+\begin{equation}
+  \widehat{\operatorname{Var}}_{\mathrm{corr}} = \left(\frac{1}{J} + \frac{n_{\mathrm{test}}}{n_{\mathrm{train}}}\right) s^2,
+  \label{eq:corrected}
+\end{equation}
+where $J=50$ is the number of fold estimates, $s^2$ their sample variance, and $n_{\mathrm{test}}/n_{\mathrm{train}} = 1/9$. Each configuration was compared with logistic regression on all features using the corrected resampled $t$-test on paired fold differences ($J-1$ degrees of freedom)~\cite{nadeau2003inference,bouckaert2004replicability}. $p$-values were adjusted for the 22 comparisons with the Holm procedure~\cite{holm1979}.
+
+\paragraph{Hold-out evaluation}
+The final pipelines were fitted on the full development set and scored once on the hold-out set. ROC-AUC confidence intervals were computed with DeLong's method, and ROC-AUCs of correlated models were compared with DeLong's test~\cite{delong1988,sun2014delong}, with Holm adjustment over the six comparisons. All other metrics were given 95\% percentile bootstrap confidence intervals (2000 resamples of the hold-out patients).
+
+\subsection{Performance measures}
+We report accuracy, balanced accuracy, precision (positive predictive value, PPV), recall (sensitivity), specificity, F1, the Matthews correlation coefficient (MCC)~\cite{chicco2020mcc}, ROC-AUC and average precision. Calibration was assessed with the Brier score, calibration-in-the-large (the intercept $a$ of a logistic model with $\operatorname{logit}\hat p$ as offset), the calibration slope $b$ from $\operatorname{logit} P(y=1) = a' + b\,\operatorname{logit}\hat p$, and calibration curves~\cite{vancalster2019calibration}. A well-calibrated model has $a = 0$ and $b = 1$. Calibration was evaluated both on the pooled out-of-fold predictions of the development set and on the hold-out set.
+
+\subsection{Threshold and decision-curve analysis}
+Instead of using the default 0.5 threshold, we pre-specified screening thresholds targeting 80\%, 85\%, 90\% and 95\% sensitivity. Each threshold was chosen on the development-set out-of-fold predictions (averaged over the five repeats) and then applied unchanged to the hold-out set, where sensitivity, specificity, PPV, NPV and the proportion of patients flagged were estimated with bootstrap confidence intervals. Clinical utility was assessed by decision-curve analysis~\cite{vickers2006dca} on the hold-out set, using the net benefit
+\begin{equation}
+  \mathrm{NB}(p_t) = \frac{\mathrm{TP}(p_t)}{n} - \frac{\mathrm{FP}(p_t)}{n}\cdot\frac{p_t}{1-p_t},
+\end{equation}
+over threshold probabilities $p_t$ from 0.05 to 0.60, and compared with treating all or no patients.
+
+\subsection{Missing-data sensitivity analysis}
+\label{sec:missing-methods}
+We repeated the development-set comparison of logistic regression and RFECV + stacking (10-fold cross-validation repeated twice) with four imputation strategies, each fitted within the training folds: (i) median imputation; (ii) median imputation plus a binary missingness indicator for every predictor with missing values, which lets the model use informative missingness~\cite{sperrin2020missing}; (iii) iterative chained-equation imputation (scikit-learn \texttt{IterativeImputer}, Bayesian ridge, 20 iterations)~\cite{vanbuuren2011mice}; and (iv) $k$-nearest-neighbour imputation ($k=10$)~\cite{troyanskaya2001knn}. Differences from median imputation were tested with the corrected resampled $t$-test.
+
+\subsection{Explainability}
+We computed exact Shapley values~\cite{lundberg2017shap} for the hold-out predictions of the final RFECV + stacking pipeline. The pipeline was treated as one function of the eight raw clinical inputs, with 40 development-set patients as the background distribution. Explanations are therefore expressed in clinically measured variables, not in engineered or standardised features.
+
+\subsection{Implementation and reproducibility}
+The framework was implemented in Python 3.11 with scikit-learn 1.9~\cite{pedregosa2011sklearn}, XGBoost 3.2, LightGBM 4.7 and SHAP. All random seeds were fixed (seed 42). Code, configuration, the fold-level results and the scripts that generate every table and figure are publicly available (see Data availability).

@@ -8,7 +8,8 @@ from sklearn.ensemble import (
     StackingClassifier,
 )
 from sklearn.feature_selection import RFECV
-from sklearn.impute import SimpleImputer
+from sklearn.experimental import enable_iterative_imputer  # noqa: F401
+from sklearn.impute import IterativeImputer, KNNImputer, SimpleImputer
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import StratifiedKFold
 from sklearn.naive_bayes import GaussianNB
@@ -117,7 +118,24 @@ def build_stacking(learner_names=None, cv_folds=5, random_state=42):
     )
 
 
-def build_pipeline(classifier, use_rfecv=True, engineer_features=True, rfecv_kwargs=None):
+IMPUTERS = ("median", "median_indicator", "iterative", "knn")
+
+
+def build_imputer(strategy="median", random_state=42):
+    """Missing-value handling compared in the missingness sensitivity analysis."""
+    if strategy == "median":
+        return SimpleImputer(strategy="median")
+    if strategy == "median_indicator":
+        # Adds a 0/1 "missingindicator_<feature>" column for every feature with missing values.
+        return SimpleImputer(strategy="median", add_indicator=True)
+    if strategy == "iterative":
+        return IterativeImputer(max_iter=20, sample_posterior=False, random_state=random_state)
+    if strategy == "knn":
+        return KNNImputer(n_neighbors=10)
+    raise ValueError(f"Unknown imputer: {strategy!r} (choose from {IMPUTERS})")
+
+
+def build_pipeline(classifier, use_rfecv=True, engineer_features=True, rfecv_kwargs=None, imputer="median"):
     """Imputation -> feature engineering -> scaling -> [RFECV] -> classifier.
 
     Every step is fitted inside the pipeline, so cross-validation of the whole
@@ -125,7 +143,7 @@ def build_pipeline(classifier, use_rfecv=True, engineer_features=True, rfecv_kwa
     feature selection.
     """
     steps = [
-        ("impute", SimpleImputer(strategy="median")),
+        ("impute", build_imputer(imputer)),
         ("engineer", ClinicalFeatureEngineer(enabled=engineer_features)),
         ("scale", StandardScaler()),
     ]

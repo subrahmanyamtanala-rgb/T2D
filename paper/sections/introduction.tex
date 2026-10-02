@@ -1,0 +1,19 @@
+\section{Introduction}
+\label{sec:intro}
+
+An estimated 536.6 million adults aged 20--79 years were living with diabetes in 2021, and this number is projected to reach 783.2 million by 2045~\cite{sun2022idf}. Type~2 diabetes mellitus (T2DM) accounts for the large majority of cases, and a substantial share of people with diabetes are undiagnosed~\cite{idf2021}. Because hyperglycaemia damages the kidneys, retina, nerves and vasculature years before symptoms appear, inexpensive risk estimates from routinely collected measurements could help target confirmatory testing.
+
+Machine-learning (ML) classifiers trained on variables such as plasma glucose, body-mass index (BMI), blood pressure and family history are a common route to such screening tools. Two design decisions dominate this literature. The first is feature selection: wrapper methods such as recursive feature elimination (RFE)~\cite{guyon2002rfe,kohavi1997wrappers} prune redundant inputs, and RFE with cross-validation (RFECV) chooses the subset size by validated performance. The second is model choice: stacked generalisation~\cite{wolpert1992stacked} trains a meta-learner on the out-of-fold predictions of diverse base learners and is often reported to outperform any single learner.
+
+On small clinical datasets, however, the reported gains of such pipelines are hard to interpret. Imputation, scaling, oversampling or feature selection are frequently fitted on the complete dataset before cross-validation or splitting. This leaks information from the evaluation data into model development and inflates performance~\cite{ambroise2002selection,kaufman2012leakage,kapoor2023leakage}. Moreover, differences between models are usually reported without confidence intervals or paired tests, calibration is rarely assessed~\cite{vancalster2019calibration}, and the default 0.5 decision threshold is seldom justified for screening. Systematic comparisons have also found no average performance benefit of flexible ML over logistic regression for clinical prediction~\cite{christodoulou2019}.
+
+This study therefore asks a deliberately narrow question: \emph{when every data-dependent step is kept inside the validation loop, does combining RFECV with a heterogeneous stacking ensemble improve T2DM prediction on the PIMA cohort over simpler models, and what does it offer for screening?} Our contributions are methodological rather than algorithmic:
+
+\begin{enumerate}
+  \item A leakage-controlled pipeline in which median imputation of physiologically impossible zeros, clinically motivated feature engineering, standardisation, RFECV and an eight-learner stacking ensemble are all re-fitted within the training part of every split.
+  \item A common feature-selection protocol in which RFECV is fitted once per outer fold and its subset is shared by every compared learner, together with a learner-specific RFECV sensitivity analysis for logistic regression.
+  \item A statistically explicit evaluation: 5$\times$10-fold repeated cross-validation with corrected confidence intervals and corrected resampled $t$-tests~\cite{nadeau2003inference,bouckaert2004replicability}, Holm adjustment for multiplicity~\cite{holm1979}, bootstrap confidence intervals and DeLong tests~\cite{delong1988,sun2014delong} on an untouched hold-out set.
+  \item A clinically oriented assessment that goes beyond discrimination: calibration, pre-specified sensitivity-targeted thresholds, decision-curve analysis~\cite{vickers2006dca}, a missing-data sensitivity analysis and SHAP explanations~\cite{lundberg2017shap}.
+\end{enumerate}
+
+We report where the framework helps and where it does not. In particular, under strict validation the stacking ensemble does not discriminate better than regularised logistic regression on this cohort.
