@@ -71,7 +71,7 @@ repeat,fold,selector,feature
 1,4,rf,HOMA_IR_surrogate
 1,4,rf,Insulin_Glucose_Ratio
 1,4,rf,BMI_Age
-1,4,rf,Hyperglycemic
+1,4,rf,IGT_2h
 1,4,rf,Pedigree_Age
 1,4,lr,Pregnancies
 1,4,lr,Glucose
@@ -95,7 +95,7 @@ repeat,fold,selector,feature
 1,5,rf,HOMA_IR_surrogate
 1,5,rf,Insulin_Glucose_Ratio
 1,5,rf,BMI_Age
-1,5,rf,Hyperglycemic
+1,5,rf,IGT_2h
 1,5,rf,Pedigree_Age
 1,5,lr,Pregnancies
 1,5,lr,Glucose
@@ -107,7 +107,7 @@ repeat,fold,selector,feature
 1,5,lr,HOMA_IR_surrogate
 1,5,lr,Insulin_Glucose_Ratio
 1,5,lr,Obese
-1,5,lr,Hyperglycemic
+1,5,lr,IGT_2h
 1,5,lr,Pedigree_Age
 1,6,rf,Pregnancies
 1,6,rf,Glucose
@@ -122,7 +122,7 @@ repeat,fold,selector,feature
 1,6,rf,HOMA_IR_surrogate
 1,6,rf,Insulin_Glucose_Ratio
 1,6,rf,BMI_Age
-1,6,rf,Hyperglycemic
+1,6,rf,IGT_2h
 1,6,rf,Pedigree_Age
 1,6,lr,Pregnancies
 1,6,lr,Glucose
@@ -134,7 +134,7 @@ repeat,fold,selector,feature
 1,6,lr,HOMA_IR_surrogate
 1,6,lr,Insulin_Glucose_Ratio
 1,6,lr,Obese
-1,6,lr,Hyperglycemic
+1,6,lr,IGT_2h
 1,7,rf,Pregnancies
 1,7,rf,Glucose
 1,7,rf,BloodPressure
@@ -179,7 +179,7 @@ repeat,fold,selector,feature
 1,8,lr,Insulin_Glucose_Ratio
 1,8,lr,BMI_Age
 1,8,lr,Obese
-1,8,lr,Hyperglycemic
+1,8,lr,IGT_2h
 1,8,lr,Pedigree_Age
 1,9,rf,Pregnancies
 1,9,rf,Glucose
@@ -222,7 +222,7 @@ repeat,fold,selector,feature
 1,10,lr,Glucose_BMI
 1,10,lr,Glucose_Age
 1,10,lr,Obese
-1,10,lr,Hyperglycemic
+1,10,lr,IGT_2h
 1,10,lr,Pedigree_Age
 2,1,rf,Glucose
 2,1,rf,BMI
@@ -276,7 +276,7 @@ repeat,fold,selector,feature
 2,3,rf,HOMA_IR_surrogate
 2,3,rf,Insulin_Glucose_Ratio
 2,3,rf,BMI_Age
-2,3,rf,Hyperglycemic
+2,3,rf,IGT_2h
 2,3,rf,Pedigree_Age
 2,3,lr,Pregnancies
 2,3,lr,Glucose
@@ -332,7 +332,7 @@ repeat,fold,selector,feature
 2,6,rf,HOMA_IR_surrogate
 2,6,rf,Insulin_Glucose_Ratio
 2,6,rf,BMI_Age
-2,6,rf,Hyperglycemic
+2,6,rf,IGT_2h
 2,6,rf,Pedigree_Age
 2,6,lr,Pregnancies
 2,6,lr,Glucose
@@ -351,7 +351,7 @@ repeat,fold,selector,feature
 2,7,rf,HOMA_IR_surrogate
 2,7,rf,Insulin_Glucose_Ratio
 2,7,rf,BMI_Age
-2,7,rf,Hyperglycemic
+2,7,rf,IGT_2h
 2,7,rf,Pedigree_Age
 2,7,lr,Pregnancies
 2,7,lr,Glucose
@@ -376,7 +376,7 @@ repeat,fold,selector,feature
 2,8,rf,HOMA_IR_surrogate
 2,8,rf,Insulin_Glucose_Ratio
 2,8,rf,BMI_Age
-2,8,rf,Hyperglycemic
+2,8,rf,IGT_2h
 2,8,rf,Pedigree_Age
 2,8,lr,Pregnancies
 2,8,lr,Glucose
@@ -407,7 +407,7 @@ repeat,fold,selector,feature
 2,9,lr,Insulin_Glucose_Ratio
 2,9,lr,BMI_Age
 2,9,lr,Obese
-2,9,lr,Hyperglycemic
+2,9,lr,IGT_2h
 2,9,lr,Pedigree_Age
 2,10,rf,Glucose
 2,10,rf,BMI
@@ -426,7 +426,7 @@ repeat,fold,selector,feature
 2,10,lr,HOMA_IR_surrogate
 2,10,lr,Insulin_Glucose_Ratio
 2,10,lr,Obese
-2,10,lr,Hyperglycemic
+2,10,lr,IGT_2h
 2,10,lr,Pedigree_Age
 3,1,rf,Pregnancies
 3,1,rf,Glucose
@@ -441,7 +441,7 @@ repeat,fold,selector,feature
 3,1,rf,HOMA_IR_surrogate
 3,1,rf,Insulin_Glucose_Ratio
 3,1,rf,BMI_Age
-3,1,rf,Hyperglycemic
+3,1,rf,IGT_2h
 3,1,rf,Pedigree_Age
 3,1,lr,Pregnancies
 3,1,lr,Glucose
@@ -477,7 +477,7 @@ repeat,fold,selector,feature
 3,2,lr,Insulin_Glucose_Ratio
 3,2,lr,BMI_Age
 3,2,lr,Obese
-3,2,lr,Hyperglycemic
+3,2,lr,IGT_2h
 3,2,lr,Pedigree_Age
 3,3,rf,Glucose
 3,3,rf,BMI
@@ -532,7 +532,7 @@ repeat,fold,selector,feature
 3,5,rf,HOMA_IR_surrogate
 3,5,rf,Insulin_Glucose_Ratio
 3,5,rf,BMI_Age
-3,5,rf,Hyperglycemic
+3,5,rf,IGT_2h
 3,5,rf,Pedigree_Age
 3,5,lr,Pregnancies
 3,5,lr,Glucose
@@ -678,7 +678,7 @@ repeat,fold,selector,feature
 4,2,rf,HOMA_IR_surrogate
 4,2,rf,Insulin_Glucose_Ratio
 4,2,rf,BMI_Age
-4,2,rf,Hyperglycemic
+4,2,rf,IGT_2h
 4,2,rf,Pedigree_Age
 4,2,lr,Pregnancies
 4,2,lr,Glucose
@@ -722,7 +722,7 @@ repeat,fold,selector,feature
 4,4,rf,HOMA_IR_surrogate
 4,4,rf,Insulin_Glucose_Ratio
 4,4,rf,BMI_Age
-4,4,rf,Hyperglycemic
+4,4,rf,IGT_2h
 4,4,rf,Pedigree_Age
 4,4,lr,Pregnancies
 4,4,lr,Glucose
@@ -734,7 +734,7 @@ repeat,fold,selector,feature
 4,4,lr,Insulin_Glucose_Ratio
 4,4,lr,BMI_Age
 4,4,lr,Obese
-4,4,lr,Hyperglycemic
+4,4,lr,IGT_2h
 4,5,rf,Pregnancies
 4,5,rf,Glucose
 4,5,rf,BloodPressure
@@ -748,7 +748,7 @@ repeat,fold,selector,feature
 4,5,rf,HOMA_IR_surrogate
 4,5,rf,Insulin_Glucose_Ratio
 4,5,rf,BMI_Age
-4,5,rf,Hyperglycemic
+4,5,rf,IGT_2h
 4,5,rf,Pedigree_Age
 4,5,lr,Pregnancies
 4,5,lr,Glucose
@@ -801,7 +801,7 @@ repeat,fold,selector,feature
 4,7,rf,HOMA_IR_surrogate
 4,7,rf,Insulin_Glucose_Ratio
 4,7,rf,BMI_Age
-4,7,rf,Hyperglycemic
+4,7,rf,IGT_2h
 4,7,rf,Pedigree_Age
 4,7,lr,Glucose
 4,7,lr,Glucose_BMI
@@ -831,7 +831,7 @@ repeat,fold,selector,feature
 4,8,lr,HOMA_IR_surrogate
 4,8,lr,Insulin_Glucose_Ratio
 4,8,lr,Obese
-4,8,lr,Hyperglycemic
+4,8,lr,IGT_2h
 4,9,rf,Glucose
 4,9,rf,BMI
 4,9,rf,DiabetesPedigreeFunction
@@ -852,7 +852,7 @@ repeat,fold,selector,feature
 4,9,lr,Insulin_Glucose_Ratio
 4,9,lr,BMI_Age
 4,9,lr,Obese
-4,9,lr,Hyperglycemic
+4,9,lr,IGT_2h
 4,9,lr,Pedigree_Age
 4,10,rf,Pregnancies
 4,10,rf,Glucose
@@ -868,7 +868,7 @@ repeat,fold,selector,feature
 4,10,rf,Insulin_Glucose_Ratio
 4,10,rf,BMI_Age
 4,10,rf,Obese
-4,10,rf,Hyperglycemic
+4,10,rf,IGT_2h
 4,10,rf,Pedigree_Age
 4,10,lr,Pregnancies
 4,10,lr,Glucose
@@ -912,7 +912,7 @@ repeat,fold,selector,feature
 5,2,rf,Insulin_Glucose_Ratio
 5,2,rf,BMI_Age
 5,2,rf,Obese
-5,2,rf,Hyperglycemic
+5,2,rf,IGT_2h
 5,2,rf,Pedigree_Age
 5,2,lr,Glucose
 5,2,lr,BMI
@@ -942,7 +942,7 @@ repeat,fold,selector,feature
 5,3,lr,Insulin_Glucose_Ratio
 5,3,lr,BMI_Age
 5,3,lr,Obese
-5,3,lr,Hyperglycemic
+5,3,lr,IGT_2h
 5,3,lr,Pedigree_Age
 5,4,rf,Glucose
 5,4,rf,BloodPressure
@@ -966,7 +966,7 @@ repeat,fold,selector,feature
 5,4,lr,HOMA_IR_surrogate
 5,4,lr,Insulin_Glucose_Ratio
 5,4,lr,Obese
-5,4,lr,Hyperglycemic
+5,4,lr,IGT_2h
 5,4,lr,Pedigree_Age
 5,5,rf,Pregnancies
 5,5,rf,Glucose
@@ -981,7 +981,7 @@ repeat,fold,selector,feature
 5,5,rf,HOMA_IR_surrogate
 5,5,rf,Insulin_Glucose_Ratio
 5,5,rf,BMI_Age
-5,5,rf,Hyperglycemic
+5,5,rf,IGT_2h
 5,5,rf,Pedigree_Age
 5,5,lr,Glucose
 5,5,lr,BMI
@@ -1022,7 +1022,7 @@ repeat,fold,selector,feature
 5,7,rf,Insulin_Glucose_Ratio
 5,7,rf,BMI_Age
 5,7,rf,Obese
-5,7,rf,Hyperglycemic
+5,7,rf,IGT_2h
 5,7,rf,Pedigree_Age
 5,7,lr,Pregnancies
 5,7,lr,Glucose
@@ -1047,7 +1047,7 @@ repeat,fold,selector,feature
 5,8,rf,HOMA_IR_surrogate
 5,8,rf,Insulin_Glucose_Ratio
 5,8,rf,BMI_Age
-5,8,rf,Hyperglycemic
+5,8,rf,IGT_2h
 5,8,rf,Pedigree_Age
 5,8,lr,Pregnancies
 5,8,lr,Glucose
@@ -1059,7 +1059,7 @@ repeat,fold,selector,feature
 5,8,lr,Insulin_Glucose_Ratio
 5,8,lr,BMI_Age
 5,8,lr,Obese
-5,8,lr,Hyperglycemic
+5,8,lr,IGT_2h
 5,8,lr,Pedigree_Age
 5,9,rf,Pregnancies
 5,9,rf,Glucose
@@ -1073,7 +1073,7 @@ repeat,fold,selector,feature
 5,9,rf,HOMA_IR_surrogate
 5,9,rf,Insulin_Glucose_Ratio
 5,9,rf,BMI_Age
-5,9,rf,Hyperglycemic
+5,9,rf,IGT_2h
 5,9,rf,Pedigree_Age
 5,9,lr,Pregnancies
 5,9,lr,Glucose

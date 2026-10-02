@@ -95,7 +95,7 @@ def fig_cv_forest(res, out):
 def fig_selection(res, out):
     f = pd.read_csv(res / "cv_selection_frequency.csv")
     engineered = {"Glucose_BMI", "Glucose_Age", "HOMA_IR_surrogate", "Insulin_Glucose_Ratio", "BMI_Age", "Obese",
-                  "Hyperglycemic", "Pedigree_Age"}
+                  "IGT_2h", "Pedigree_Age"}
     rf = f[f.selector == "rf"].set_index("feature").frequency
     lr = f[f.selector == "lr"].set_index("feature").frequency
     feats = sorted(set(rf.index) | set(lr.index) | engineered, key=lambda k: (-rf.get(k, 0), -lr.get(k, 0)))
@@ -315,7 +315,7 @@ def table_supp_selection(res, out):
     lr = f[f.selector == "lr"].set_index("feature").frequency
     feats = ["Pregnancies", "Glucose", "BloodPressure", "SkinThickness", "Insulin", "BMI", "DiabetesPedigreeFunction",
              "Age", "Glucose_BMI", "Glucose_Age", "HOMA_IR_surrogate", "Insulin_Glucose_Ratio", "BMI_Age", "Obese",
-             "Hyperglycemic", "Pedigree_Age"]
+             "IGT_2h", "Pedigree_Age"]
     rows = [f"\\texttt{{{k.replace('_', chr(92) + '_')}}} & {'original' if i < 8 else 'derived'} & "
             f"{100 * rf.get(k, 0):.0f} & {100 * lr.get(k, 0):.0f}" + r" \\" for i, k in enumerate(feats)]
     (out / "supp_selection.tex").write_text("\n".join(rows) + "\n\\bottomrule\n")

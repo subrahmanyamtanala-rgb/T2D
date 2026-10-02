@@ -30,7 +30,7 @@ class ClinicalFeatureEngineer(BaseEstimator, TransformerMixin):
         X["Insulin_Glucose_Ratio"] = X["Insulin"] / X["Glucose"].clip(lower=1.0)
         X["BMI_Age"] = X["BMI"] * X["Age"] / 100.0
         X["Obese"] = (X["BMI"] >= 30).astype(float)
-        X["Hyperglycemic"] = (X["Glucose"] >= 140).astype(float)
+        X["IGT_2h"] = (X["Glucose"] >= 140).astype(float)
         X["Pedigree_Age"] = X["DiabetesPedigreeFunction"] * X["Age"]
         return X
 
@@ -44,7 +44,7 @@ class ClinicalFeatureEngineer(BaseEstimator, TransformerMixin):
                 "Insulin_Glucose_Ratio",
                 "BMI_Age",
                 "Obese",
-                "Hyperglycemic",
+                "IGT_2h",
                 "Pedigree_Age",
             ]
         return np.asarray(names, dtype=object)

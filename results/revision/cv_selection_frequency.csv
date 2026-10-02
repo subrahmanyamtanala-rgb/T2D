@@ -11,7 +11,7 @@ lr,Obese,0.74
 lr,HOMA_IR_surrogate,0.72
 lr,Pedigree_Age,0.64
 lr,BMI_Age,0.38
-lr,Hyperglycemic,0.26
+lr,IGT_2h,0.26
 lr,Insulin,0.26
 lr,BloodPressure,0.02
 rf,BMI,1.0
@@ -28,5 +28,5 @@ rf,Insulin_Glucose_Ratio,0.68
 rf,Pregnancies,0.58
 rf,SkinThickness,0.56
 rf,Insulin,0.46
-rf,Hyperglycemic,0.38
+rf,IGT_2h,0.38
 rf,Obese,0.06
