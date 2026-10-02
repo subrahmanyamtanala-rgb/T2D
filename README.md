@@ -88,6 +88,29 @@ Outputs in `results/`:
 * `figures/` – RFECV curve, feature ranking, ROC curves, confusion matrix
 * `stacking_rfecv_model.joblib` – trained pipeline (not committed; regenerate with `train`)
 
+## Extended validation and manuscript
+
+`t2d/analysis.py` runs the extended validation used in the manuscript (`paper/`, prepared for
+*Computers in Biology and Medicine*). Results are written to `results/revision/`.
+
+```bash
+python -m t2d.analysis --stage cv        # 5x10-fold repeated CV, corrected CIs, Holm-adjusted tests (~40 min)
+python -m t2d.analysis --stage holdout   # hold-out bootstrap CIs, DeLong, calibration, thresholds, DCA, SHAP
+python -m t2d.analysis --stage missing   # median vs. indicators vs. iterative vs. KNN imputation (~35 min)
+paper/build.sh                           # figures, tables, manuscript.pdf, highlights.pdf, cover_letter.pdf
+```
+
+The statistical tools live in `t2d/stats.py`:
+
+* the Nadeau–Bengio corrected CV variance and the corrected resampled t-test
+* Holm adjustment
+* fast DeLong
+* bootstrap confidence intervals
+* calibration intercept and slope
+* decision-curve net benefit
+
+`paper/REFERENCES_CHECK.md` records how each reference was verified.
+
 ## Results (reference run, seed 42)
 
 ### Hold-out test set (154 patients, never seen during training or feature selection)
@@ -122,7 +145,7 @@ See `results/cv_summary.csv` for every model.
 On the full training set RFECV kept **15 of 16** features and dropped the `Obese` flag
 (`results/figures/rfecv_curve.png`). Across the 10 CV folds it kept a mean of 11.9 features.
 Glucose, BMI, DiabetesPedigreeFunction and the engineered Glucose×BMI, Glucose×Age,
-HOMA-IR, BMI×Age and Pedigree×Age features were kept in **every** fold
+HOMA-IR surrogate, BMI×Age and Pedigree×Age features were kept in **every** fold
 (`results/rfecv_selection_frequency.csv`).
 
 The logistic meta-learner gives the most weight to LR, ExtraTrees, RF and SVM

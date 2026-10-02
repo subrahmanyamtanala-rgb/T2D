@@ -12,10 +12,12 @@
 \usepackage{multirow}
 \usepackage{xcolor}
 \usepackage{lineno}
+\usepackage{xurl}
 \usepackage[hidelinks]{hyperref}
 \usepackage{siunitx}
 \usepackage[font=small,labelfont=bf]{caption}
 \usepackage{rotating}
+\usepackage[section]{placeins}
 
 \graphicspath{{figures/}}
 \newcolumntype{L}{>{\raggedright\arraybackslash}X}
@@ -24,6 +26,11 @@
 \linenumbers
 
 \journal{Computers in Biology and Medicine}
+
+% Drop the title-page "Preprint submitted to" footer, which collides with the author footnote.
+\makeatletter
+\def\ps@pprintTitle{\let\@oddhead\@empty\let\@evenhead\@empty\let\@oddfoot\@empty\let\@evenfoot\@empty}
+\makeatother
 
 \begin{document}
 

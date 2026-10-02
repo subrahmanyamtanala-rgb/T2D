@@ -184,6 +184,20 @@ def ci(v, lo, hi, d=3):
     return f"{v:.{d}f} ({lo:.{d}f}--{hi:.{d}f})"
 
 
+def cirow(*cells):
+    """Second table line holding the confidence intervals, in a smaller font."""
+    return " & ".join(r"{\scriptsize\color{gray}" + c + "}" if c else "" for c in cells) + r" \\[2pt]"
+
+
+def lohi(lo, hi, d=3):
+    return f"({lo:.{d}f}--{hi:.{d}f})"
+
+
+def signed(x, d=3):
+    out = f"{x:+.{d}f}"
+    return out.replace("-0.000", "0.000").replace("+0.000", "0.000")
+
+
 def pfmt(p):
     return "<0.001" if p < 0.001 else f"{p:.3f}"
 
@@ -195,13 +209,13 @@ def table_cv(res, out):
         name = MODEL_NAME[r.model] + (" + RFECV" if r.rfecv and r.model != "lr_own_rfecv" else "")
         is_ref = r.model == "lr" and not r.rfecv
         rows.append(
-            f"{name} & {r.n_features:.1f} & {ci(r.roc_auc_mean, r.roc_auc_lo, r.roc_auc_hi)} & "
-            f"{ci(r.mcc_mean, r.mcc_lo, r.mcc_hi)} & {r.recall_mean:.3f} & {r.specificity_mean:.3f} & "
-            f"{r.brier_mean:.3f} & "
-            + ("reference" if is_ref else f"{r.roc_auc_diff_vs_lr:+.3f} ({pfmt(r.roc_auc_p_holm)})")
+            f"{name} & {r.n_features:.1f} & {r.roc_auc_mean:.3f} & {r.mcc_mean:.3f} & {r.recall_mean:.3f} & "
+            f"{r.specificity_mean:.3f} & {r.brier_mean:.3f} & "
+            + ("reference" if is_ref else f"{signed(r.roc_auc_diff_vs_lr)} ({pfmt(r.roc_auc_p_holm)})")
             + r" \\"
         )
-    (out / "tab_cv.tex").write_text("\n".join(rows) + "\n")
+        rows.append(cirow("", "", lohi(r.roc_auc_lo, r.roc_auc_hi), lohi(r.mcc_lo, r.mcc_hi), "", "", "", ""))
+    (out / "tab_cv.tex").write_text("\n".join(rows) + "\n\\bottomrule\n")
 
 
 def table_holdout(res, out):
@@ -211,13 +225,15 @@ def table_holdout(res, out):
     rows = []
     for m in order:
         r = t.loc[m]
-        test = "--" if m == "stacking_rfecv" else f"{dl.loc[m, 'auc_diff']:+.3f} ({pfmt(dl.loc[m, 'p_holm'])})"
+        test = "--" if m == "stacking_rfecv" else f"{signed(dl.loc[m, 'auc_diff'])} ({pfmt(dl.loc[m, 'p_holm'])})"
         rows.append(
-            f"{LABEL[m]} & {ci(r.roc_auc, r.roc_auc_lo, r.roc_auc_hi)} & {ci(r.recall, r.recall_lo, r.recall_hi)} & "
-            f"{ci(r.specificity, r.specificity_lo, r.specificity_hi)} & {ci(r.mcc, r.mcc_lo, r.mcc_hi)} & "
-            f"{r.f1:.3f} & {r.brier:.3f} & {test}" + r" \\"
+            f"{LABEL[m]} & {r.roc_auc:.3f} & {r.recall:.3f} & {r.specificity:.3f} & {r.mcc:.3f} & "
+            f"{r.f1:.3f} & {r.ap:.3f} & {test}" + r" \\"
         )
-    (out / "tab_holdout.tex").write_text("\n".join(rows) + "\n")
+        rows.append(cirow("", lohi(r.roc_auc_lo, r.roc_auc_hi), lohi(r.recall_lo, r.recall_hi),
+                          lohi(r.specificity_lo, r.specificity_hi), lohi(r.mcc_lo, r.mcc_hi),
+                          lohi(r.f1_lo, r.f1_hi), "", ""))
+    (out / "tab_holdout.tex").write_text("\n".join(rows) + "\n\\bottomrule\n")
 
 
 def table_thresholds(res, out):
@@ -225,11 +241,12 @@ def table_thresholds(res, out):
     rows = []
     for _, r in t.iterrows():
         rows.append(
-            f"{LABEL[r.model]} & {100 * r.target_sensitivity:.0f}\\% & {r.threshold:.3f} & "
-            f"{ci(r.sensitivity, r.sensitivity_lo, r.sensitivity_hi)} & {ci(r.specificity, r.specificity_lo, r.specificity_hi)} & "
-            f"{r.ppv:.3f} & {r.npv:.3f} & {100 * r.flagged:.1f}\\%" + r" \\"
+            f"{LABEL[r.model]} & {100 * r.target_sensitivity:.0f}\\% & {r.threshold:.3f} & {r.sensitivity:.3f} & "
+            f"{r.specificity:.3f} & {r.ppv:.3f} & {r.npv:.3f} & {100 * r.flagged:.1f}\\%" + r" \\"
         )
-    (out / "tab_thresholds.tex").write_text("\n".join(rows) + "\n")
+        rows.append(cirow("", "", "", lohi(r.sensitivity_lo, r.sensitivity_hi), lohi(r.specificity_lo, r.specificity_hi),
+                          lohi(r.ppv_lo, r.ppv_hi), lohi(r.npv_lo, r.npv_hi), ""))
+    (out / "tab_thresholds.tex").write_text("\n".join(rows) + "\n\\bottomrule\n")
 
 
 def table_calibration(res, out):
@@ -240,9 +257,9 @@ def table_calibration(res, out):
         o, h = oof.loc[m], ho.loc[m]
         rows.append(
             f"{LABEL[m]} & {o.brier:.3f} & {o.cal_intercept:+.3f} & {o.cal_slope:.3f} & "
-            f"{ci(h.brier, h.brier_lo, h.brier_hi)} & {h.cal_intercept:+.3f} & {h.cal_slope:.3f}" + r" \\"
+            f"{h.brier:.3f} {{\\scriptsize\\color{{gray}}{lohi(h.brier_lo, h.brier_hi)}}} & {h.cal_intercept:+.3f} & {h.cal_slope:.3f}" + r" \\"
         )
-    (out / "tab_calibration.tex").write_text("\n".join(rows) + "\n")
+    (out / "tab_calibration.tex").write_text("\n".join(rows) + "\n\\bottomrule\n")
 
 
 def table_missing(res, out):
@@ -254,14 +271,14 @@ def table_missing(res, out):
     for model, label in (("lr", "Logistic regression"), ("stacking_rfecv", "Stacking + RFECV")):
         for imp in order:
             r = s[(s.model == model) & (s.imputer == imp)].iloc[0]
-            diff = "reference" if imp == "median" else f"{r.roc_auc_diff_vs_median:+.3f} ({pfmt(r.roc_auc_p_vs_median)})"
+            diff = "reference" if imp == "median" else f"{signed(r.roc_auc_diff_vs_median)} ({pfmt(r.roc_auc_p_vs_median)})"
             rows.append(
                 f"{label} & {names[imp]} & {r.n_features:.1f} & {ci(r.roc_auc_mean, r.roc_auc_lo, r.roc_auc_hi)} & "
                 f"{r.mcc_mean:.3f} & {r.recall_mean:.3f} & {r.brier_mean:.3f} & {diff}" + r" \\"
             )
         if model == "lr":
             rows.append(r"\midrule")
-    (out / "tab_missing.tex").write_text("\n".join(rows) + "\n")
+    (out / "tab_missing.tex").write_text("\n".join(rows) + "\n\\bottomrule\n")
 
 
 def main():

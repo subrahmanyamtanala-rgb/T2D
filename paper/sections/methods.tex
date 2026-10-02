@@ -3,7 +3,7 @@
 
 Fig.~\ref{fig:pipeline} summarises the framework. This study is reported following the TRIPOD+AI recommendations where applicable~\cite{collins2024tripodai}.
 
-\begin{figure*}[t]
+\begin{figure*}[!htbp]
   \centering
   \includegraphics[width=\textwidth]{fig1_pipeline.pdf}
   \caption{Proposed pipeline. Imputation, feature engineering, standardisation and RFECV are fitted on the training part of each split only. The features retained by RFECV are passed to eight heterogeneous base learners, whose out-of-fold (OOF) probabilities train a logistic-regression meta-learner.}
@@ -16,7 +16,7 @@ We used the PIMA Indians Diabetes dataset~\cite{smith1988adap}: 768 women of Pim
 \subsection{Missing values}
 Zero is physiologically impossible for glucose, blood pressure, skin-fold thickness, insulin and BMI, so these zeros were recoded as missing (Table~\ref{tab:missing-counts}). In the primary analysis, missing values were replaced by the median of the training data in each split. Because insulin is missing for almost half of the patients, we also compared three alternatives in a sensitivity analysis (Section~\ref{sec:missing-methods}).
 
-\begin{table}[t]
+\begin{table}[!htbp]
 \centering
 \caption{Physiologically impossible zero values recoded as missing ($n = 768$).}
 \label{tab:missing-counts}
@@ -36,12 +36,12 @@ Glucose & 5 & 0.7 \\
 \subsection{Feature engineering}
 Eight derived features encoding known T2DM risk interactions were added after imputation, giving 16 candidates for RFECV (Table~\ref{tab:features}). The insulin-resistance term follows the HOMA-IR formula~\cite{matthews1985homa}, but PIMA records 2-h post-load rather than fasting glucose and insulin. We therefore name it \texttt{HOMA\_IR\_surrogate} and do not interpret it as clinical HOMA-IR. The binary thresholds follow the WHO obesity cut-off~\cite{who2000obesity} and the 2-h OGTT threshold for impaired glucose tolerance~\cite{ada2024}.
 
-\begin{table}[t]
+\begin{table}[!htbp]
 \centering
 \caption{Derived features. All continuous inputs are measured after imputation.}
 \label{tab:features}
 \small
-\begin{tabularx}{\linewidth}{lll}
+\begin{tabularx}{\linewidth}{llL}
 \toprule
 Feature & Definition & Rationale \\
 \midrule
@@ -66,7 +66,7 @@ In the model comparison, RFECV was fitted once within each outer training fold u
 \subsection{Stacking ensemble}
 The level-0 learners were chosen for diversity of inductive bias (Table~\ref{tab:learners}). The level-1 meta-learner was an L2-regularised logistic regression with balanced class weights. It was trained on the positive-class probabilities produced by each base learner for held-out samples in an internal stratified 5-fold split~\cite{wolpert1992stacked,ting1999issues}. The base learners were then refitted on all training data for prediction. Gaussian naive Bayes and a depth-5 decision tree were evaluated as additional reference learners but were not part of the stack. Hyperparameters were fixed a priori at common defaults (Table~\ref{tab:learners}) and were not tuned, so that no tuning loop could leak into the evaluation.
 
-\begin{table}[t]
+\begin{table}[!htbp]
 \centering
 \caption{Level-0 learners and their fixed settings.}
 \label{tab:learners}
