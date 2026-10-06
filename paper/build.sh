@@ -7,6 +7,6 @@ python make_assets.py --results ../results/revision --out .
 for doc in manuscript supplementary highlights cover_letter declaration_of_interest ethics_statement; do
   latexmk -pdf -interaction=nonstopmode -halt-on-error "$doc.tex" >/dev/null
 done
-latexmk -c >/dev/null
+latexmk -c >/dev/null; rm -f submission/cbm_latex_source.zip
 python make_submission.py
 echo "Built: manuscript.pdf supplementary.pdf highlights.pdf cover_letter.pdf"

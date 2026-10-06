@@ -1,4 +1,5 @@
-%% Manuscript for submission to Computers in Biology and Medicine (Elsevier).
+%% Manuscript for submission to Biomedical Signal Processing and Control (Elsevier).
+%% The target journal and ORCID are set in journal.tex.
 %% Build: latexmk -pdf manuscript.tex   (or ./build.sh, which also builds figures, highlights and cover letter)
 \documentclass[preprint,12pt,authoryear=false]{elsarticle}
 
@@ -18,6 +19,8 @@
 \usepackage[font=small,labelfont=bf]{caption}
 \usepackage{rotating}
 \usepackage[section]{placeins}
+\usepackage{orcidlink}
+\input{journal}
 
 \graphicspath{{figures/}}
 \newcolumntype{L}{>{\raggedright\arraybackslash}X}
@@ -25,7 +28,7 @@
 \modulolinenumbers[5]
 \linenumbers
 
-\journal{Computers in Biology and Medicine}
+\journal{\targetjournal}
 
 % Drop the title-page "Preprint submitted to" footer, which collides with the author footnote.
 \makeatletter
@@ -38,10 +41,10 @@
 
 \title{Leakage-controlled evaluation of stacking and recursive feature elimination for diabetes outcome prediction on the PIMA dataset}
 
-%% TODO(author): confirm name, affiliation and ORCID before submission.
-\author[anits]{Subrahmanyam Tanala\corref{cor1}}
+%% TODO(author): confirm name and affiliation before submission.
+\author[anits]{Subrahmanyam Tanala\,\orcidlink{\authororcid}\corref{cor1}}
 \ead{subrahmanyam.eee@anits.edu.in}
-\cortext[cor1]{Corresponding author.}
+\cortext[cor1]{Corresponding author. ORCID: \href{https://orcid.org/\authororcid}{\authororcid}}
 \affiliation[anits]{organization={Department of Electrical and Electronics Engineering, Anil Neerukonda Institute of Technology and Sciences (ANITS)},
             city={Visakhapatnam},
             state={Andhra Pradesh},
