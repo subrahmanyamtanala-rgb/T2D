@@ -31,7 +31,7 @@ from sklearn.feature_selection import RFECV
 from sklearn.metrics import average_precision_score, brier_score_loss
 from sklearn.model_selection import RepeatedStratifiedKFold, StratifiedKFold, train_test_split
 
-from t2d.data import load_dataset
+from t2d.data import load_named
 from t2d.evaluation import classification_metrics, preprocessing_only
 from t2d.models import IMPUTERS, base_learners, build_pipeline, build_stacking, rfecv_estimator
 from t2d.stats import (
@@ -50,12 +50,13 @@ warnings.filterwarnings("ignore", message="X has feature names, but LogisticRegr
 warnings.filterwarnings("ignore", category=FutureWarning)
 
 SEED = 42
+DATASET = "pima"  # set by --dataset; "nhanes" runs the external check
 REFERENCE = ("lr", False)  # comparator for paired tests: logistic regression, all 16 features
 SENSITIVITY_TARGETS = (0.80, 0.85, 0.90, 0.95)
 
 
 def split(seed=SEED):
-    X, y = load_dataset()
+    X, y = load_named(DATASET)
     return train_test_split(X, y, test_size=0.2, stratify=y, random_state=seed)
 
 
@@ -117,7 +118,7 @@ def stage_cv(out, n_splits=10, n_repeats=5, seed=SEED):
 
 def summarize_cv(out, n_train_frac=0.9):
     df = pd.read_csv(out / "cv_fold_metrics.csv")
-    n_total = 614
+    n_total = len(split()[0])  # development-set size
     n_tr, n_te = n_total * n_train_frac, n_total * (1 - n_train_frac)
     metrics = ["accuracy", "balanced_accuracy", "precision", "recall", "specificity", "f1", "mcc", "roc_auc", "brier"]
     rows = []
@@ -187,7 +188,8 @@ def stage_missing(out, n_splits=10, n_repeats=2, seed=SEED):
             log(f"missing {imp:<16} repeat {j // n_splits + 1} fold {j % n_splits + 1:>2}: kept {len(kept)}")
     df = pd.DataFrame(rows)
     df.to_csv(out / "missing_fold_metrics.csv", index=False)
-    n_tr, n_te = 614 * (n_splits - 1) / n_splits, 614 / n_splits
+    n_dev = len(X)
+    n_tr, n_te = n_dev * (n_splits - 1) / n_splits, n_dev / n_splits
     summary = []
     for (imp, name), g in df.groupby(["imputer", "model"]):
         g = g.sort_values(["repeat", "fold"])
@@ -328,7 +330,10 @@ def main(argv=None):
     p.add_argument("--stage", choices=["cv", "summarize", "missing", "holdout"], required=True)
     p.add_argument("--output-dir", type=Path, default=Path("results/revision"))
     p.add_argument("--repeats", type=int, default=5)
+    p.add_argument("--dataset", choices=["pima", "nhanes"], default="pima")
     args = p.parse_args(argv)
+    global DATASET
+    DATASET = args.dataset
     args.output_dir.mkdir(parents=True, exist_ok=True)
     if args.stage == "cv":
         stage_cv(args.output_dir, n_repeats=args.repeats)

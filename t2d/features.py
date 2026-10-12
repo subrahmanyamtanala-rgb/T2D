@@ -4,9 +4,23 @@ import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 
+# (name, required inputs, formula). A feature is added only when all its inputs are present, so
+# the same transformer serves PIMA (8 inputs -> 16 candidates) and NHANES (6 inputs -> 13).
+DERIVED = [
+    ("Glucose_BMI", {"Glucose", "BMI"}, lambda X: X["Glucose"] * X["BMI"] / 100.0),
+    ("Glucose_Age", {"Glucose", "Age"}, lambda X: X["Glucose"] * X["Age"] / 100.0),
+    # HOMA-IR *surrogate*: PIMA has 2-h post-load values, not the fasting values HOMA-IR requires.
+    ("HOMA_IR_surrogate", {"Glucose", "Insulin"}, lambda X: X["Glucose"] * X["Insulin"] / 405.0),
+    ("Insulin_Glucose_Ratio", {"Glucose", "Insulin"}, lambda X: X["Insulin"] / X["Glucose"].clip(lower=1.0)),
+    ("BMI_Age", {"BMI", "Age"}, lambda X: X["BMI"] * X["Age"] / 100.0),
+    ("Obese", {"BMI"}, lambda X: (X["BMI"] >= 30).astype(float)),
+    ("IGT_2h", {"Glucose"}, lambda X: (X["Glucose"] >= 140).astype(float)),
+    ("Pedigree_Age", {"DiabetesPedigreeFunction", "Age"}, lambda X: X["DiabetesPedigreeFunction"] * X["Age"]),
+]
+
 
 class ClinicalFeatureEngineer(BaseEstimator, TransformerMixin):
-    """Adds derived T2DM risk features to the raw PIMA measurements.
+    """Adds derived T2DM risk features to the raw clinical measurements.
 
     The extra features give RFECV a richer (and partly redundant) candidate set
     to prune, which is where recursive elimination is most useful.
@@ -23,28 +37,15 @@ class ClinicalFeatureEngineer(BaseEstimator, TransformerMixin):
         X = pd.DataFrame(X, columns=self.feature_names_in_).copy()
         if not self.enabled:
             return X
-        X["Glucose_BMI"] = X["Glucose"] * X["BMI"] / 100.0
-        X["Glucose_Age"] = X["Glucose"] * X["Age"] / 100.0
-        # HOMA-IR *surrogate*: PIMA has 2-h post-load values, not the fasting values HOMA-IR requires.
-        X["HOMA_IR_surrogate"] = X["Glucose"] * X["Insulin"] / 405.0
-        X["Insulin_Glucose_Ratio"] = X["Insulin"] / X["Glucose"].clip(lower=1.0)
-        X["BMI_Age"] = X["BMI"] * X["Age"] / 100.0
-        X["Obese"] = (X["BMI"] >= 30).astype(float)
-        X["IGT_2h"] = (X["Glucose"] >= 140).astype(float)
-        X["Pedigree_Age"] = X["DiabetesPedigreeFunction"] * X["Age"]
+        has = set(X.columns)
+        for name, needs, fn in DERIVED:
+            if needs <= has:
+                X[name] = fn(X)
         return X
 
     def get_feature_names_out(self, input_features=None):
         names = list(self.feature_names_in_)
         if self.enabled:
-            names += [
-                "Glucose_BMI",
-                "Glucose_Age",
-                "HOMA_IR_surrogate",
-                "Insulin_Glucose_Ratio",
-                "BMI_Age",
-                "Obese",
-                "IGT_2h",
-                "Pedigree_Age",
-            ]
+            has = set(names)
+            names += [name for name, needs, _ in DERIVED if needs <= has]
         return np.asarray(names, dtype=object)
