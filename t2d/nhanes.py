@@ -38,7 +38,7 @@ MIN_AGE = 21
 def _at_resolution(s, decimals):
     """True where the value has at most `decimals` decimal places (i.e. not an imputed float)."""
     scaled = s * 10**decimals
-    return np.isclose(scaled, np.round(scaled), atol=1e-6)
+    return np.isclose(scaled, np.round(scaled), rtol=0.0, atol=1e-6)
 
 
 def _finish(df):
