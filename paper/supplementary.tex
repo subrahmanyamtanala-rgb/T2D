@@ -244,12 +244,28 @@ The Platt calibration of the SVM uses deterministic, unshuffled internal folds. 
 
 \section{NHANES 2013--2014 replication cohort}
 
-\paragraph{Source} The official CDC data files could not be downloaded from the analysis environment. The cohort was built from the public repository \url{https://github.com/ChintanaL/diabetes-prediction-using-nhanes-dataset} (commit \texttt{074e664}), which contains processed extracts of the 2013--2014 public-use files: \texttt{labs\_new.csv} (OGTT glucose \texttt{LBXGLT}, insulin \texttt{LBXIN}, HbA1c \texttt{LBXGH}), \texttt{demographic\_new.csv} (sex, age) and \texttt{examination\_full.csv} (BMI, diastolic blood pressure). Respondent identifiers range from 73557 to 83731, the 2013--2014 cycle.
+\paragraph{Source} The cohort was built from six official CDC public-use files of NHANES 2013--2014: \texttt{DEMO\_H} (sex \texttt{RIAGENDR}, age \texttt{RIDAGEYR}), \texttt{BMX\_H} (BMI \texttt{BMXBMI}), \texttt{BPX\_H} (diastolic readings \texttt{BPXDI1}--\texttt{BPXDI4}), \texttt{OGTT\_H} (2-h glucose \texttt{LBXGLT}), \texttt{INS\_H} (fasting insulin \texttt{LBXIN}) and \texttt{GHB\_H} (HbA1c \texttt{LBXGH}). The files are included unchanged in \texttt{data/nhanes\_cdc/}, with SHA-256 checksums:
+\begin{center}\small
+\begin{tabular}{ll}
+\toprule
+File & SHA-256 \\
+\midrule
+\texttt{DEMO\_H.XPT} & \texttt{f8f0cbb3085a323d4cde22349b164878fea1e64dbc404e65b5815c7816b547d7} \\
+\texttt{BMX\_H.XPT} & \texttt{fd5e9fc6e6aab0a4aee6e699f51497bbc9b62101f7f43aee924c473e38fd9442} \\
+\texttt{BPX\_H.XPT} & \texttt{b6641efc30ac9b9de328dfbf4110d0d120439aadca2c2bc89f2e77310d1a0c8e} \\
+\texttt{OGTT\_H.XPT} & \texttt{0fcd192aa5b8ee47239764b18ee9df5ac94e666f317085a1685ad5cb0a907b00} \\
+\texttt{INS\_H.XPT} & \texttt{aa337fde2e12582ead0b171c49a88d6d30368357b496fa69dcdb3507cae29f4f} \\
+\texttt{GHB\_H.XPT} & \texttt{0695894ad55ac96f315a8415401977b0856c402d16762115b534bcd5dfeae89e} \\
+\bottomrule
+\end{tabular}
+\end{center}
 
-\paragraph{Removal of imputed values} The repository's author had imputed missing laboratory and examination values. Such values do not match NHANES' published resolution: for example, 280 glucose values equal 115.5503\ldots\ and 39 insulin values equal 12.4658\ldots. We kept glucose and diastolic blood pressure only if integer, insulin only with at most two decimals, and HbA1c and BMI only with at most one decimal; all other values were set to missing. Of 1454 laboratory records, 1144 had genuine glucose, insulin and HbA1c values, and 902 of these were aged $\geq 21$ years. BMI was missing for 3 and blood pressure for 30 participants; both were imputed inside the validation folds.
+\paragraph{Eligibility} Of 2909 OGTT-subsample records, 2345 had a 2-h glucose value, 1858 of these were aged $\geq 21$ years and 1815 also had fasting insulin and HbA1c. Diastolic blood pressure was the mean of the valid readings; a recorded value of 0~mmHg was treated as missing (the SAS transport format stores it as a value of order $10^{-79}$). BMI was missing for 9 and blood pressure for 41 participants; both were imputed inside the validation folds.
 
-\paragraph{Cohort and outcome} 902 adults (456 women), 288 with HbA1c $\geq 5.7\%$ (31.9\%). The derived file \texttt{data/nhanes\_2013\_2014\_ogtt.csv} has SHA-256 \texttt{957039e34efbd8a8c0965f14790cd2b2dbb83df8609433b08df03131c4406186}.
+\paragraph{Cohort and outcome} 1815 adults (929 women), 551 with HbA1c $\geq 5.7\%$ (30.4\%) and 58 with HbA1c $\geq 6.5\%$. The derived file \texttt{data/nhanes\_2013\_2014\_ogtt.csv} has SHA-256 \texttt{eb56eb115abe320ecba06f12fb548c776a67778dd7d605c71a78996570f2f640}; a unit test checks that it is rebuilt exactly from the six files.
 
-\paragraph{Regenerating from the official files} \texttt{python -m t2d.nhanes --cdc <dir>} builds the same cohort from the CDC files \texttt{DEMO\_H}, \texttt{BMX\_H}, \texttt{BPX\_H}, \texttt{OGTT\_H}, \texttt{INS\_H} and \texttt{GHB\_H} (diastolic pressure as the mean of the non-zero readings). The analysis is then re-run with \texttt{python -m t2d.analysis --dataset nhanes --stage cv} and \texttt{--stage holdout}. Results are in \texttt{results/external\_nhanes/}.
+\paragraph{Earlier processed copy} An earlier version of this analysis used a third-party processed copy (\url{https://github.com/ChintanaL/diabetes-prediction-using-nhanes-dataset}, commit \texttt{074e664}), because the CDC site could not be reached from the analysis environment. Its laboratory file covers only 1454 OGTT participants and yielded 902 of the 1815 eligible adults. For these 902 adults every sex, age, BMI, glucose, insulin and HbA1c value equals the official one; diastolic blood pressure differs because the copy used only the second reading. All results reported here use the official files.
+
+\paragraph{Reproduction} \texttt{python -m t2d.nhanes --cdc data/nhanes\_cdc} rebuilds the cohort. The analysis is then re-run with \texttt{python -m t2d.analysis --dataset nhanes --output-dir results/external\_nhanes} and \texttt{--stage cv}, \texttt{--stage summarize} and \texttt{--stage holdout}.
 
 \end{document}
