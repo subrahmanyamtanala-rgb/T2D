@@ -10,17 +10,20 @@ Two sources produce the same columns:
 
 * ``from_cdc``    the official CDC SAS transport files (DEMO_H, BMX_H, BPX_H,
                   OGTT_H, INS_H, GHB_H) downloaded from https://wwwn.cdc.gov/nchs/nhanes/.
-                  This is the authoritative route.
-* ``from_mirror`` the processed copy in github.com/ChintanaL/diabetes-prediction-
+                  This is the authoritative route and produces the analysed cohort.
+* ``from_mirror`` (superseded) the processed copy in github.com/ChintanaL/diabetes-prediction-
                   using-nhanes-dataset, which the analysis environment could reach.
                   That copy contains values imputed by its author; only values at
                   NHANES' published measurement resolution (glucose: integer,
                   insulin: 2 decimals, HbA1c and BMI: 1 decimal, BP: integer) are
                   kept, everything else is set to missing and re-imputed inside the
-                  validation folds.
+                  validation folds. Its laboratory file covers only 1454 of the OGTT
+                  participants, so it yields 902 of the 1815 eligible adults; all of its
+                  retained values equal the official ones except diastolic BP, for which it
+                  uses the second reading only.
 
-    python -m t2d.nhanes --mirror <repo_dir>     # writes data/nhanes_2013_2014_ogtt.csv
-    python -m t2d.nhanes --cdc <dir_with_xpt>
+    python -m t2d.nhanes --cdc data/nhanes_cdc   # writes data/nhanes_2013_2014_ogtt.csv
+    python -m t2d.nhanes --mirror <repo_dir> --out <csv>
 """
 
 import argparse
@@ -72,7 +75,10 @@ def from_cdc(directory):
     rd = lambda name: pd.read_sas(d / f"{name}.XPT", format="xport")  # noqa: E731
     demo, bmx, bpx = rd("DEMO_H"), rd("BMX_H"), rd("BPX_H")
     ogtt, ins, ghb = rd("OGTT_H"), rd("INS_H"), rd("GHB_H")
-    bp = bpx[["BPXDI1", "BPXDI2", "BPXDI3", "BPXDI4"]].replace(0, np.nan).mean(axis=1)
+    # Diastolic BP: mean of the valid readings. A recorded 0 mmHg is not physiological; the SAS
+    # transport format returns it as a denormal (~5e-79) rather than an exact 0, hence `< 1`.
+    di = bpx[["BPXDI1", "BPXDI2", "BPXDI3", "BPXDI4"]]
+    bp = di.mask(di < 1).mean(axis=1)
     df = (
         demo[["SEQN", "RIAGENDR", "RIDAGEYR"]]
         .merge(ogtt[["SEQN", "LBXGLT"]], on="SEQN")

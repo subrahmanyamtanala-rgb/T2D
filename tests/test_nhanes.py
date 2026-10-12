@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 from t2d.data import load_named
-from t2d.nhanes import _at_resolution
+from t2d.nhanes import _at_resolution, from_cdc
 
 
 def test_resolution_filter_drops_imputed_floats():
@@ -19,4 +19,10 @@ def test_nhanes_cohort_is_adult_and_hba1c_defined():
     X, y = load_named("nhanes")
     assert list(X.columns) == ["Sex", "Age", "BMI", "BloodPressure", "Glucose", "Insulin"]
     assert not (X[["BMI", "BloodPressure", "Glucose", "Insulin"]] == 0).any().any()
-    assert np.isclose(y.mean(), 288 / 902)
+    assert len(y) == 1815 and y.sum() == 551
+    assert X.BloodPressure.dropna().between(20, 150).all()
+
+
+def test_nhanes_cohort_rebuilds_from_official_files():
+    rebuilt = from_cdc("data/nhanes_cdc")
+    pd.testing.assert_frame_equal(rebuilt, pd.read_csv("data/nhanes_2013_2014_ogtt.csv"), check_dtype=False)
