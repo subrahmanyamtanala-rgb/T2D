@@ -20,6 +20,10 @@
 \usepackage{rotating}
 \usepackage[section]{placeins}
 \usepackage{orcidlink}
+\usepackage{microtype}
+\setlength{\emergencystretch}{1.5em}
+% Expandable input for generated table bodies that begin with \multicolumn.
+\makeatletter\newcommand{\tableinput}[1]{\@@input #1 }\makeatother
 %% Target journal and author identifiers shared by every submission document.
 \providecommand{\targetjournal}{Biomedical Signal Processing and Control}
 \providecommand{\authororcid}{0009-0003-7760-0522}
@@ -105,7 +109,7 @@ Fig.~\ref{fig:pipeline} summarises the framework. This study is reported followi
 
 \begin{figure*}[!htbp]
   \centering
-  \includegraphics[width=\textwidth]{fig1_pipeline.pdf}
+  \includegraphics{fig1_pipeline.pdf}
   \caption{Proposed pipeline. Imputation, feature engineering, standardisation and RFECV are fitted on the training part of each split only. The features retained by RFECV are passed to eight heterogeneous base learners, whose out-of-fold (OOF) probabilities train a logistic-regression meta-learner.}
   \label{fig:pipeline}
 \end{figure*}
@@ -240,68 +244,44 @@ The common RFECV subset changed mean ROC-AUC by at most 0.003 for every learner 
 
 \begin{table*}[!htbp]
 \centering
-\caption{Development-set performance from 5$\times$10-fold repeated cross-validation (50 folds; $n = 614$). Values are means; Nadeau--Bengio corrected 95\% confidence intervals are shown in grey beneath. $\Delta$AUC is the mean paired difference from logistic regression on all features, with Holm-adjusted corrected resampled $t$-test $p$-values in brackets. ``+ RFECV'' denotes the common, random-forest-ranked RFECV subset. Sensitivity and specificity use a 0.5 threshold.}
+\caption{Development-set performance from 5$\times$10-fold repeated cross-validation (50 folds; $n = 614$). Values are means; Nadeau--Bengio corrected 95\% confidence intervals for ROC-AUC are shown in grey (intervals for every metric are in Supplementary Table~S1). $\Delta$AUC is the mean paired difference from logistic regression on all features, with Holm-adjusted corrected resampled $t$-test $p$-values in brackets. ``+ RFECV'' denotes the common, random-forest-ranked RFECV subset. Feat., number of input features (mean over folds after RFECV); Sens., sensitivity; Spec., specificity. Sensitivity and specificity use a 0.5 threshold.}
 \label{tab:cv}
-\footnotesize
-\setlength{\tabcolsep}{4pt}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{lrcccccl}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lrr@{\,}lccccr@{\,}l}
 \toprule
-Model & Features & ROC-AUC & MCC & Sens. & Spec. & Brier & $\Delta$AUC (adj.\ $p$) \\
+Model & Feat. & \multicolumn{2}{c}{ROC-AUC (95\% CI)} & MCC & Sens. & Spec. & Brier & \multicolumn{2}{c}{$\Delta$AUC (adj.\ $p$)} \\
 \midrule
-Stacking & 16.0 & 0.846 & 0.505 & 0.763 & 0.757 & 0.164 & +0.004 (1.000) \\
- &  & {\scriptsize\color{gray}(0.812--0.880)} & {\scriptsize\color{gray}(0.431--0.580)} &  &  &  &  \\[2pt]
-Stacking + RFECV & 12.0 & 0.843 & 0.497 & 0.753 & 0.757 & 0.165 & +0.001 (1.000) \\
- &  & {\scriptsize\color{gray}(0.809--0.878)} & {\scriptsize\color{gray}(0.418--0.575)} &  &  &  &  \\[2pt]
-Logistic regression & 16.0 & 0.842 & 0.507 & 0.744 & 0.775 & 0.163 & reference \\
- &  & {\scriptsize\color{gray}(0.809--0.875)} & {\scriptsize\color{gray}(0.438--0.576)} &  &  &  &  \\[2pt]
-Logistic regression + RFECV & 12.0 & 0.842 & 0.492 & 0.717 & 0.782 & 0.163 & 0.000 (1.000) \\
- &  & {\scriptsize\color{gray}(0.811--0.873)} & {\scriptsize\color{gray}(0.418--0.566)} &  &  &  &  \\[2pt]
-LR (LR-ranked RFECV) & 10.1 & 0.840 & 0.496 & 0.731 & 0.776 & 0.164 & -0.002 (1.000) \\
- &  & {\scriptsize\color{gray}(0.808--0.873)} & {\scriptsize\color{gray}(0.426--0.567)} &  &  &  &  \\[2pt]
-SVM & 16.0 & 0.840 & 0.505 & 0.655 & 0.840 & 0.156 & -0.002 (1.000) \\
- &  & {\scriptsize\color{gray}(0.802--0.878)} & {\scriptsize\color{gray}(0.418--0.591)} &  &  &  &  \\[2pt]
-SVM + RFECV & 12.0 & 0.837 & 0.483 & 0.643 & 0.830 & 0.158 & -0.006 (1.000) \\
- &  & {\scriptsize\color{gray}(0.800--0.873)} & {\scriptsize\color{gray}(0.393--0.572)} &  &  &  &  \\[2pt]
-Extra trees + RFECV & 12.0 & 0.835 & 0.474 & 0.693 & 0.786 & 0.161 & -0.007 (1.000) \\
- &  & {\scriptsize\color{gray}(0.798--0.872)} & {\scriptsize\color{gray}(0.393--0.556)} &  &  &  &  \\[2pt]
-Extra trees & 16.0 & 0.835 & 0.469 & 0.676 & 0.794 & 0.160 & -0.008 (1.000) \\
- &  & {\scriptsize\color{gray}(0.795--0.874)} & {\scriptsize\color{gray}(0.377--0.560)} &  &  &  &  \\[2pt]
-Naive Bayes + RFECV & 12.0 & 0.832 & 0.473 & 0.624 & 0.836 & 0.205 & -0.010 (1.000) \\
- &  & {\scriptsize\color{gray}(0.797--0.867)} & {\scriptsize\color{gray}(0.393--0.554)} &  &  &  &  \\[2pt]
-Random forest & 16.0 & 0.831 & 0.484 & 0.712 & 0.780 & 0.164 & -0.011 (1.000) \\
- &  & {\scriptsize\color{gray}(0.795--0.868)} & {\scriptsize\color{gray}(0.390--0.578)} &  &  &  &  \\[2pt]
-Random forest + RFECV & 12.0 & 0.831 & 0.492 & 0.718 & 0.781 & 0.164 & -0.011 (1.000) \\
- &  & {\scriptsize\color{gray}(0.797--0.866)} & {\scriptsize\color{gray}(0.403--0.581)} &  &  &  &  \\[2pt]
-Gradient boosting & 16.0 & 0.831 & 0.436 & 0.595 & 0.828 & 0.164 & -0.011 (1.000) \\
- &  & {\scriptsize\color{gray}(0.798--0.863)} & {\scriptsize\color{gray}(0.353--0.518)} &  &  &  &  \\[2pt]
-Naive Bayes & 16.0 & 0.830 & 0.494 & 0.626 & 0.852 & 0.205 & -0.012 (1.000) \\
- &  & {\scriptsize\color{gray}(0.793--0.867)} & {\scriptsize\color{gray}(0.420--0.568)} &  &  &  &  \\[2pt]
-Gradient boosting + RFECV & 12.0 & 0.830 & 0.441 & 0.601 & 0.827 & 0.164 & -0.012 (1.000) \\
- &  & {\scriptsize\color{gray}(0.798--0.862)} & {\scriptsize\color{gray}(0.354--0.528)} &  &  &  &  \\[2pt]
-KNN & 16.0 & 0.824 & 0.466 & 0.611 & 0.841 & 0.162 & -0.019 (1.000) \\
- &  & {\scriptsize\color{gray}(0.781--0.866)} & {\scriptsize\color{gray}(0.375--0.558)} &  &  &  &  \\[2pt]
-XGBoost & 16.0 & 0.821 & 0.436 & 0.611 & 0.816 & 0.173 & -0.021 (0.954) \\
- &  & {\scriptsize\color{gray}(0.784--0.857)} & {\scriptsize\color{gray}(0.346--0.527)} &  &  &  &  \\[2pt]
-KNN + RFECV & 12.0 & 0.821 & 0.458 & 0.604 & 0.839 & 0.163 & -0.022 (1.000) \\
- &  & {\scriptsize\color{gray}(0.777--0.865)} & {\scriptsize\color{gray}(0.361--0.554)} &  &  &  &  \\[2pt]
-XGBoost + RFECV & 12.0 & 0.820 & 0.440 & 0.615 & 0.817 & 0.172 & -0.023 (0.586) \\
- &  & {\scriptsize\color{gray}(0.785--0.854)} & {\scriptsize\color{gray}(0.357--0.524)} &  &  &  &  \\[2pt]
-LightGBM & 16.0 & 0.803 & 0.414 & 0.622 & 0.789 & 0.205 & -0.039 (0.044) \\
- &  & {\scriptsize\color{gray}(0.764--0.842)} & {\scriptsize\color{gray}(0.321--0.508)} &  &  &  &  \\[2pt]
-LightGBM + RFECV & 12.0 & 0.800 & 0.420 & 0.627 & 0.790 & 0.202 & -0.042 (0.020) \\
- &  & {\scriptsize\color{gray}(0.765--0.836)} & {\scriptsize\color{gray}(0.336--0.505)} &  &  &  &  \\[2pt]
-Decision tree + RFECV & 12.0 & 0.772 & 0.429 & 0.767 & 0.679 & 0.207 & -0.070 (0.020) \\
- &  & {\scriptsize\color{gray}(0.731--0.813)} & {\scriptsize\color{gray}(0.348--0.510)} &  &  &  &  \\[2pt]
-Decision tree & 16.0 & 0.770 & 0.431 & 0.774 & 0.675 & 0.210 & -0.072 (0.025) \\
- &  & {\scriptsize\color{gray}(0.729--0.811)} & {\scriptsize\color{gray}(0.352--0.511)} &  &  &  &  \\[2pt]
+Stacking & 16 & 0.846 & {\color{gray}(0.812--0.880)} & 0.505 & 0.763 & 0.757 & 0.164 & $+$0.004 & (1.000) \\
+Stacking + RFECV & 12.0 & 0.843 & {\color{gray}(0.809--0.878)} & 0.497 & 0.753 & 0.757 & 0.165 & $+$0.001 & (1.000) \\
+Logistic regression & 16 & 0.842 & {\color{gray}(0.809--0.875)} & 0.507 & 0.744 & 0.775 & 0.163 & \multicolumn{2}{c}{reference} \\
+Logistic regression + RFECV & 12.0 & 0.842 & {\color{gray}(0.811--0.873)} & 0.492 & 0.717 & 0.782 & 0.163 & 0.000 & (1.000) \\
+LR + LR-ranked RFECV & 10.1 & 0.840 & {\color{gray}(0.808--0.873)} & 0.496 & 0.731 & 0.776 & 0.164 & $-$0.002 & (1.000) \\
+SVM & 16 & 0.840 & {\color{gray}(0.802--0.878)} & 0.505 & 0.655 & 0.840 & 0.156 & $-$0.002 & (1.000) \\
+SVM + RFECV & 12.0 & 0.837 & {\color{gray}(0.800--0.873)} & 0.483 & 0.643 & 0.830 & 0.158 & $-$0.006 & (1.000) \\
+Extra trees + RFECV & 12.0 & 0.835 & {\color{gray}(0.798--0.872)} & 0.474 & 0.693 & 0.786 & 0.161 & $-$0.007 & (1.000) \\
+Extra trees & 16 & 0.835 & {\color{gray}(0.795--0.874)} & 0.469 & 0.676 & 0.794 & 0.160 & $-$0.008 & (1.000) \\
+Naive Bayes + RFECV & 12.0 & 0.832 & {\color{gray}(0.797--0.867)} & 0.473 & 0.624 & 0.836 & 0.205 & $-$0.010 & (1.000) \\
+Random forest & 16 & 0.831 & {\color{gray}(0.795--0.868)} & 0.484 & 0.712 & 0.780 & 0.164 & $-$0.011 & (1.000) \\
+Random forest + RFECV & 12.0 & 0.831 & {\color{gray}(0.797--0.866)} & 0.492 & 0.718 & 0.781 & 0.164 & $-$0.011 & (1.000) \\
+Gradient boosting & 16 & 0.831 & {\color{gray}(0.798--0.863)} & 0.436 & 0.595 & 0.828 & 0.164 & $-$0.011 & (1.000) \\
+Naive Bayes & 16 & 0.830 & {\color{gray}(0.793--0.867)} & 0.494 & 0.626 & 0.852 & 0.205 & $-$0.012 & (1.000) \\
+Gradient boosting + RFECV & 12.0 & 0.830 & {\color{gray}(0.798--0.862)} & 0.441 & 0.601 & 0.827 & 0.164 & $-$0.012 & (1.000) \\
+KNN & 16 & 0.824 & {\color{gray}(0.781--0.866)} & 0.466 & 0.611 & 0.841 & 0.162 & $-$0.019 & (1.000) \\
+XGBoost & 16 & 0.821 & {\color{gray}(0.784--0.857)} & 0.436 & 0.611 & 0.816 & 0.173 & $-$0.021 & (0.954) \\
+KNN + RFECV & 12.0 & 0.821 & {\color{gray}(0.777--0.865)} & 0.458 & 0.604 & 0.839 & 0.163 & $-$0.022 & (1.000) \\
+XGBoost + RFECV & 12.0 & 0.820 & {\color{gray}(0.785--0.854)} & 0.440 & 0.615 & 0.817 & 0.172 & $-$0.023 & (0.586) \\
+LightGBM & 16 & 0.803 & {\color{gray}(0.764--0.842)} & 0.414 & 0.622 & 0.789 & 0.205 & $-$0.039 & (0.044) \\
+LightGBM + RFECV & 12.0 & 0.800 & {\color{gray}(0.765--0.836)} & 0.420 & 0.627 & 0.790 & 0.202 & $-$0.042 & (0.020) \\
+Decision tree + RFECV & 12.0 & 0.772 & {\color{gray}(0.731--0.813)} & 0.429 & 0.767 & 0.679 & 0.207 & $-$0.070 & (0.020) \\
+Decision tree & 16 & 0.770 & {\color{gray}(0.729--0.811)} & 0.431 & 0.774 & 0.675 & 0.210 & $-$0.072 & (0.025) \\
 \bottomrule
-\end{tabular}}
+\end{tabular}
 \end{table*}
 
 \begin{figure}[!htbp]
   \centering
-  \includegraphics[width=0.75\linewidth]{fig2_cv_auc.pdf}
+  \includegraphics{fig2_cv_auc.pdf}
   \caption{Cross-validated ROC-AUC of each learner with all 16 features (open circles) and with the common RFECV subset (filled circles). Bars are Nadeau--Bengio corrected 95\% confidence intervals over 50 folds. The dashed line marks logistic regression on all features. The stacking ensemble is highlighted.}
   \label{fig:cv}
 \end{figure}
@@ -314,7 +294,7 @@ Coefficient-ranked RFECV for logistic regression preferred a different, smaller 
 
 \begin{figure}[!htbp]
   \centering
-  \includegraphics[width=0.75\linewidth]{fig3_selection.pdf}
+  \includegraphics{fig3_selection.pdf}
   \caption{Proportion of the 50 outer cross-validation folds in which each candidate feature was retained by random-forest-ranked RFECV (the common protocol) and by coefficient-ranked RFECV for logistic regression. Engineered features are shown in italics.}
   \label{fig:selection}
 \end{figure}
@@ -325,36 +305,35 @@ On the 154 hold-out patients (Table~\ref{tab:holdout}, Fig.~\ref{fig:rocpr}), th
 
 \begin{table*}[!htbp]
 \centering
-\caption{Hold-out performance ($n = 154$, 54 with diabetes) at a 0.5 threshold. 95\% confidence intervals are shown in grey beneath: DeLong for ROC-AUC, percentile bootstrap (2000 resamples) otherwise. AP, average precision. The last column gives the ROC-AUC difference of stacking + RFECV minus the comparator, with Holm-adjusted DeLong $p$-values.}
+\caption{Hold-out performance ($n = 154$, 54 with diabetes) at a 0.5 threshold. 95\% confidence intervals are shown in grey beneath: DeLong for ROC-AUC, percentile bootstrap (2000 resamples) otherwise. F1 and average precision are in Supplementary Table~S2. The last column gives the ROC-AUC difference of stacking + RFECV minus the comparator, with Holm-adjusted DeLong $p$-values.}
 \label{tab:holdout}
-\footnotesize
-\setlength{\tabcolsep}{3.5pt}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{lccccccl}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lccccl}
 \toprule
-Model & ROC-AUC & Sensitivity & Specificity & MCC & F1 & AP & $\Delta$AUC (adj.\ $p$) \\
+Model & ROC-AUC & Sensitivity & Specificity & MCC & $\Delta$AUC (adj.\ $p$) \\
 \midrule
-Stacking + RFECV & 0.822 & 0.815 & 0.740 & 0.532 & 0.710 & 0.696 & -- \\
- & {\scriptsize\color{gray}(0.756--0.888)} & {\scriptsize\color{gray}(0.709--0.915)} & {\scriptsize\color{gray}(0.649--0.823)} & {\scriptsize\color{gray}(0.403--0.658)} & {\scriptsize\color{gray}(0.615--0.797)} &  &  \\[2pt]
-Stacking & 0.819 & 0.796 & 0.720 & 0.494 & 0.688 & 0.702 & +0.003 (1.000) \\
- & {\scriptsize\color{gray}(0.752--0.885)} & {\scriptsize\color{gray}(0.688--0.904)} & {\scriptsize\color{gray}(0.631--0.804)} & {\scriptsize\color{gray}(0.362--0.625)} & {\scriptsize\color{gray}(0.592--0.778)} &  &  \\[2pt]
-Logistic regression & 0.811 & 0.741 & 0.740 & 0.464 & 0.667 & 0.683 & +0.011 (1.000) \\
- & {\scriptsize\color{gray}(0.744--0.878)} & {\scriptsize\color{gray}(0.625--0.862)} & {\scriptsize\color{gray}(0.649--0.825)} & {\scriptsize\color{gray}(0.325--0.606)} & {\scriptsize\color{gray}(0.564--0.763)} &  &  \\[2pt]
-LR + LR-ranked RFECV & 0.809 & 0.722 & 0.740 & 0.447 & 0.655 & 0.684 & +0.013 (0.892) \\
- & {\scriptsize\color{gray}(0.741--0.876)} & {\scriptsize\color{gray}(0.608--0.846)} & {\scriptsize\color{gray}(0.649--0.825)} & {\scriptsize\color{gray}(0.309--0.591)} & {\scriptsize\color{gray}(0.551--0.753)} &  &  \\[2pt]
-Random forest + RFECV & 0.826 & 0.685 & 0.760 & 0.434 & 0.643 & 0.711 & -0.004 (1.000) \\
- & {\scriptsize\color{gray}(0.761--0.892)} & {\scriptsize\color{gray}(0.564--0.804)} & {\scriptsize\color{gray}(0.673--0.840)} & {\scriptsize\color{gray}(0.290--0.573)} & {\scriptsize\color{gray}(0.537--0.739)} &  &  \\[2pt]
-XGBoost + RFECV & 0.824 & 0.648 & 0.820 & 0.470 & 0.654 & 0.697 & -0.003 (1.000) \\
- & {\scriptsize\color{gray}(0.758--0.891)} & {\scriptsize\color{gray}(0.523--0.776)} & {\scriptsize\color{gray}(0.743--0.888)} & {\scriptsize\color{gray}(0.321--0.605)} & {\scriptsize\color{gray}(0.543--0.752)} &  &  \\[2pt]
-SVM & 0.810 & 0.537 & 0.830 & 0.383 & 0.580 & 0.684 & +0.012 (1.000) \\
- & {\scriptsize\color{gray}(0.740--0.880)} & {\scriptsize\color{gray}(0.407--0.672)} & {\scriptsize\color{gray}(0.755--0.896)} & {\scriptsize\color{gray}(0.226--0.534)} & {\scriptsize\color{gray}(0.457--0.692)} &  &  \\[2pt]
+Stacking + RFECV & 0.822 & 0.815 & 0.740 & 0.532 & -- \\
+ & {\scriptsize\color{gray}(0.756--0.888)} & {\scriptsize\color{gray}(0.709--0.915)} & {\scriptsize\color{gray}(0.649--0.823)} & {\scriptsize\color{gray}(0.403--0.658)} &  \\[2pt]
+Stacking & 0.819 & 0.796 & 0.720 & 0.494 & $+$0.003 (1.000) \\
+ & {\scriptsize\color{gray}(0.752--0.885)} & {\scriptsize\color{gray}(0.688--0.904)} & {\scriptsize\color{gray}(0.631--0.804)} & {\scriptsize\color{gray}(0.362--0.625)} &  \\[2pt]
+Logistic regression & 0.811 & 0.741 & 0.740 & 0.464 & $+$0.011 (1.000) \\
+ & {\scriptsize\color{gray}(0.744--0.878)} & {\scriptsize\color{gray}(0.625--0.862)} & {\scriptsize\color{gray}(0.649--0.825)} & {\scriptsize\color{gray}(0.325--0.606)} &  \\[2pt]
+LR + LR-ranked RFECV & 0.809 & 0.722 & 0.740 & 0.447 & $+$0.013 (0.892) \\
+ & {\scriptsize\color{gray}(0.741--0.876)} & {\scriptsize\color{gray}(0.608--0.846)} & {\scriptsize\color{gray}(0.649--0.825)} & {\scriptsize\color{gray}(0.309--0.591)} &  \\[2pt]
+Random forest + RFECV & 0.826 & 0.685 & 0.760 & 0.434 & $-$0.004 (1.000) \\
+ & {\scriptsize\color{gray}(0.761--0.892)} & {\scriptsize\color{gray}(0.564--0.804)} & {\scriptsize\color{gray}(0.673--0.840)} & {\scriptsize\color{gray}(0.290--0.573)} &  \\[2pt]
+XGBoost + RFECV & 0.824 & 0.648 & 0.820 & 0.470 & $-$0.003 (1.000) \\
+ & {\scriptsize\color{gray}(0.758--0.891)} & {\scriptsize\color{gray}(0.523--0.776)} & {\scriptsize\color{gray}(0.743--0.888)} & {\scriptsize\color{gray}(0.321--0.605)} &  \\[2pt]
+SVM & 0.810 & 0.537 & 0.830 & 0.383 & $+$0.012 (1.000) \\
+ & {\scriptsize\color{gray}(0.740--0.880)} & {\scriptsize\color{gray}(0.407--0.672)} & {\scriptsize\color{gray}(0.755--0.896)} & {\scriptsize\color{gray}(0.226--0.534)} &  \\[2pt]
 \bottomrule
-\end{tabular}}
+\end{tabular}
 \end{table*}
 
 \begin{figure*}[!htbp]
   \centering
-  \includegraphics[width=0.9\textwidth]{fig4_roc_pr.pdf}
+  \includegraphics{fig4_roc_pr.pdf}
   \caption{Hold-out ROC (a) and precision--recall (b) curves for stacking + RFECV, logistic regression and random forest + RFECV. The dotted lines show chance performance and the outcome prevalence (0.35).}
   \label{fig:rocpr}
 \end{figure*}
@@ -367,7 +346,7 @@ All class-weighted models overestimated risk (Table~\ref{tab:calibration}, Fig.~
 \centering
 \caption{Calibration. Development values use pooled out-of-fold predictions ($614 \times 5$); hold-out Brier scores have bootstrap 95\% CIs. Ideal values: intercept 0, slope 1.}
 \label{tab:calibration}
-\footnotesize
+\scriptsize
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{lcccccc}
 \toprule
@@ -375,17 +354,17 @@ All class-weighted models overestimated risk (Table~\ref{tab:calibration}, Fig.~
 \cmidrule(lr){2-4}\cmidrule(lr){5-7}
 Model & Brier & Intercept & Slope & Brier (95\% CI) & Intercept & Slope \\
 \midrule
-Stacking + RFECV & 0.165 & -0.616 & 1.002 & 0.177 {\scriptsize\color{gray}(0.143--0.213)} & -0.624 & 0.866 \\
-Logistic regression & 0.163 & -0.623 & 0.899 & 0.181 {\scriptsize\color{gray}(0.147--0.219)} & -0.629 & 0.756 \\
-Random forest + RFECV & 0.164 & -0.406 & 0.823 & 0.166 {\scriptsize\color{gray}(0.134--0.201)} & -0.338 & 0.776 \\
-SVM & 0.156 & -0.029 & 0.985 & 0.169 {\scriptsize\color{gray}(0.135--0.205)} & +0.004 & 0.844 \\
+Stacking + RFECV & 0.165 & $-$0.616 & 1.002 & 0.177 {\scriptsize\color{gray}(0.143--0.213)} & $-$0.624 & 0.866 \\
+Logistic regression & 0.163 & $-$0.623 & 0.899 & 0.181 {\scriptsize\color{gray}(0.147--0.219)} & $-$0.629 & 0.756 \\
+Random forest + RFECV & 0.164 & $-$0.406 & 0.823 & 0.166 {\scriptsize\color{gray}(0.134--0.201)} & $-$0.338 & 0.776 \\
+SVM & 0.156 & $-$0.029 & 0.985 & 0.169 {\scriptsize\color{gray}(0.135--0.205)} & $+$0.004 & 0.844 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{figure*}[!htbp]
   \centering
-  \includegraphics[width=0.9\textwidth]{fig5_calibration.pdf}
+  \includegraphics{fig5_calibration.pdf}
   \caption{Calibration curves (deciles of predicted risk) on (a) pooled development-set out-of-fold predictions and (b) the hold-out set (quintiles). Points below the diagonal indicate overestimated risk.}
   \label{fig:calibration}
 \end{figure*}
@@ -400,36 +379,38 @@ In this internal decision-curve analysis (Fig.~\ref{fig:dca}), all three models 
 \centering
 \caption{Sensitivity-targeted operating points. Thresholds were chosen on development-set out-of-fold predictions and applied unchanged to the hold-out set. Bootstrap 95\% CIs are shown in grey beneath. ``Flagged'' is the proportion of hold-out patients referred for confirmatory testing.}
 \label{tab:thresholds}
-\footnotesize
+\scriptsize
 \setlength{\tabcolsep}{4pt}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{lccccccc}
+\begin{tabular}{ccccccc}
 \toprule
-Model & Target & Threshold & Sensitivity & Specificity & PPV & NPV & Flagged \\
+Target & Threshold & Sensitivity & Specificity & PPV & NPV & Flagged \\
 \midrule
-Stacking + RFECV & 80\% & 0.433 & 0.815 & 0.660 & 0.564 & 0.868 & 50.6\% \\
- &  &  & {\scriptsize\color{gray}(0.709--0.915)} & {\scriptsize\color{gray}(0.559--0.747)} & {\scriptsize\color{gray}(0.453--0.670)} & {\scriptsize\color{gray}(0.790--0.940)} &  \\[2pt]
-Stacking + RFECV & 85\% & 0.348 & 0.852 & 0.630 & 0.554 & 0.887 & 53.9\% \\
- &  &  & {\scriptsize\color{gray}(0.754--0.942)} & {\scriptsize\color{gray}(0.529--0.723)} & {\scriptsize\color{gray}(0.442--0.658)} & {\scriptsize\color{gray}(0.809--0.957)} &  \\[2pt]
-Stacking + RFECV & 90\% & 0.276 & 0.907 & 0.560 & 0.527 & 0.918 & 60.4\% \\
- &  &  & {\scriptsize\color{gray}(0.821--0.981)} & {\scriptsize\color{gray}(0.459--0.653)} & {\scriptsize\color{gray}(0.420--0.622)} & {\scriptsize\color{gray}(0.839--0.983)} &  \\[2pt]
-Stacking + RFECV & 95\% & 0.212 & 0.926 & 0.520 & 0.510 & 0.929 & 63.6\% \\
- &  &  & {\scriptsize\color{gray}(0.848--0.983)} & {\scriptsize\color{gray}(0.423--0.621)} & {\scriptsize\color{gray}(0.408--0.606)} & {\scriptsize\color{gray}(0.855--0.984)} &  \\[2pt]
-Logistic regression & 80\% & 0.413 & 0.852 & 0.650 & 0.568 & 0.890 & 52.6\% \\
- &  &  & {\scriptsize\color{gray}(0.754--0.942)} & {\scriptsize\color{gray}(0.551--0.738)} & {\scriptsize\color{gray}(0.458--0.671)} & {\scriptsize\color{gray}(0.814--0.958)} &  \\[2pt]
-Logistic regression & 85\% & 0.345 & 0.852 & 0.620 & 0.548 & 0.886 & 54.5\% \\
- &  &  & {\scriptsize\color{gray}(0.754--0.942)} & {\scriptsize\color{gray}(0.520--0.710)} & {\scriptsize\color{gray}(0.438--0.654)} & {\scriptsize\color{gray}(0.806--0.956)} &  \\[2pt]
-Logistic regression & 90\% & 0.284 & 0.889 & 0.580 & 0.533 & 0.906 & 58.4\% \\
- &  &  & {\scriptsize\color{gray}(0.804--0.968)} & {\scriptsize\color{gray}(0.480--0.674)} & {\scriptsize\color{gray}(0.427--0.633)} & {\scriptsize\color{gray}(0.829--0.970)} &  \\[2pt]
-Logistic regression & 95\% & 0.212 & 0.963 & 0.530 & 0.525 & 0.964 & 64.3\% \\
- &  &  & {\scriptsize\color{gray}(0.903--1.000)} & {\scriptsize\color{gray}(0.431--0.630)} & {\scriptsize\color{gray}(0.419--0.624)} & {\scriptsize\color{gray}(0.903--1.000)} &  \\[2pt]
+\multicolumn{7}{l}{\textit{Stacking + RFECV}} \\
+80\% & 0.433 & 0.815 & 0.660 & 0.564 & 0.868 & 50.6\% \\
+ &  & {\scriptsize\color{gray}(0.709--0.915)} & {\scriptsize\color{gray}(0.559--0.747)} & {\scriptsize\color{gray}(0.453--0.670)} & {\scriptsize\color{gray}(0.790--0.940)} &  \\[2pt]
+85\% & 0.348 & 0.852 & 0.630 & 0.554 & 0.887 & 53.9\% \\
+ &  & {\scriptsize\color{gray}(0.754--0.942)} & {\scriptsize\color{gray}(0.529--0.723)} & {\scriptsize\color{gray}(0.442--0.658)} & {\scriptsize\color{gray}(0.809--0.957)} &  \\[2pt]
+90\% & 0.276 & 0.907 & 0.560 & 0.527 & 0.918 & 60.4\% \\
+ &  & {\scriptsize\color{gray}(0.821--0.981)} & {\scriptsize\color{gray}(0.459--0.653)} & {\scriptsize\color{gray}(0.420--0.622)} & {\scriptsize\color{gray}(0.839--0.983)} &  \\[2pt]
+95\% & 0.212 & 0.926 & 0.520 & 0.510 & 0.929 & 63.6\% \\
+ &  & {\scriptsize\color{gray}(0.848--0.983)} & {\scriptsize\color{gray}(0.423--0.621)} & {\scriptsize\color{gray}(0.408--0.606)} & {\scriptsize\color{gray}(0.855--0.984)} &  \\[2pt]
+\midrule
+\multicolumn{7}{l}{\textit{Logistic regression}} \\
+80\% & 0.413 & 0.852 & 0.650 & 0.568 & 0.890 & 52.6\% \\
+ &  & {\scriptsize\color{gray}(0.754--0.942)} & {\scriptsize\color{gray}(0.551--0.738)} & {\scriptsize\color{gray}(0.458--0.671)} & {\scriptsize\color{gray}(0.814--0.958)} &  \\[2pt]
+85\% & 0.345 & 0.852 & 0.620 & 0.548 & 0.886 & 54.5\% \\
+ &  & {\scriptsize\color{gray}(0.754--0.942)} & {\scriptsize\color{gray}(0.520--0.710)} & {\scriptsize\color{gray}(0.438--0.654)} & {\scriptsize\color{gray}(0.806--0.956)} &  \\[2pt]
+90\% & 0.284 & 0.889 & 0.580 & 0.533 & 0.906 & 58.4\% \\
+ &  & {\scriptsize\color{gray}(0.804--0.968)} & {\scriptsize\color{gray}(0.480--0.674)} & {\scriptsize\color{gray}(0.427--0.633)} & {\scriptsize\color{gray}(0.829--0.970)} &  \\[2pt]
+95\% & 0.212 & 0.963 & 0.530 & 0.525 & 0.964 & 64.3\% \\
+ &  & {\scriptsize\color{gray}(0.903--1.000)} & {\scriptsize\color{gray}(0.431--0.630)} & {\scriptsize\color{gray}(0.419--0.624)} & {\scriptsize\color{gray}(0.903--1.000)} &  \\[2pt]
 \bottomrule
-\end{tabular}}
+\end{tabular}
 \end{table*}
 
 \begin{figure}[!htbp]
   \centering
-  \includegraphics[width=0.6\linewidth]{fig6_dca.pdf}
+  \includegraphics{fig6_dca.pdf}
   \caption{Decision curves on the hold-out set. Net benefit is shown against the threshold probability at which a patient would be referred for confirmatory testing.}
   \label{fig:dca}
 \end{figure}
@@ -442,22 +423,25 @@ The conclusions were robust to the imputation strategy (Table~\ref{tab:missing})
 \centering
 \caption{Missing-data sensitivity analysis on the development set (10-fold cross-validation repeated twice; 20 folds). ROC-AUC values are means with corrected 95\% CIs. $\Delta$AUC is the paired difference from median imputation for the same model, with the corrected resampled $t$-test $p$-value.}
 \label{tab:missing}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{llcccccl}
+\scriptsize
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{lcccccl}
 \toprule
-Model & Imputation & Features & ROC-AUC (95\% CI) & MCC & Sens. & Brier & $\Delta$AUC ($p$) \\
+Imputation & Features & ROC-AUC (95\% CI) & MCC & Sens. & Brier & $\Delta$AUC ($p$) \\
 \midrule
-Logistic regression & Median & 16.0 & 0.846 (0.813--0.878) & 0.514 & 0.743 & 0.162 & reference \\
-Logistic regression & Median + indicators & 21.0 & 0.836 (0.788--0.884) & 0.484 & 0.727 & 0.166 & -0.010 (0.387) \\
-Logistic regression & Iterative (MICE-style) & 16.0 & 0.847 (0.814--0.879) & 0.517 & 0.753 & 0.162 & +0.001 (0.712) \\
-Logistic regression & KNN ($k=10$) & 16.0 & 0.847 (0.813--0.880) & 0.505 & 0.743 & 0.162 & +0.001 (0.607) \\
+\multicolumn{7}{l}{\textit{Logistic regression}} \\
+\quad Median & 16 & 0.846 (0.813--0.878) & 0.514 & 0.743 & 0.162 & reference \\
+\quad Median + indicators & 21 & 0.836 (0.788--0.884) & 0.484 & 0.727 & 0.166 & $-$0.010 (0.387) \\
+\quad Iterative (MICE-style) & 16 & 0.847 (0.814--0.879) & 0.517 & 0.753 & 0.162 & $+$0.001 (0.712) \\
+\quad KNN ($k=10$) & 16 & 0.847 (0.813--0.880) & 0.505 & 0.743 & 0.162 & $+$0.001 (0.607) \\
 \midrule
-Stacking + RFECV & Median & 11.3 & 0.844 (0.804--0.883) & 0.498 & 0.752 & 0.164 & reference \\
-Stacking + RFECV & Median + indicators & 13.3 & 0.841 (0.799--0.884) & 0.496 & 0.748 & 0.166 & -0.002 (0.503) \\
-Stacking + RFECV & Iterative (MICE-style) & 14.0 & 0.848 (0.815--0.880) & 0.512 & 0.762 & 0.163 & +0.004 (0.594) \\
-Stacking + RFECV & KNN ($k=10$) & 13.6 & 0.849 (0.814--0.884) & 0.501 & 0.759 & 0.163 & +0.005 (0.448) \\
+\multicolumn{7}{l}{\textit{Stacking + RFECV}} \\
+\quad Median & 11.3 & 0.844 (0.804--0.883) & 0.498 & 0.752 & 0.164 & reference \\
+\quad Median + indicators & 13.3 & 0.841 (0.799--0.884) & 0.496 & 0.748 & 0.166 & $-$0.002 (0.503) \\
+\quad Iterative (MICE-style) & 14.0 & 0.848 (0.815--0.880) & 0.512 & 0.762 & 0.163 & $+$0.004 (0.594) \\
+\quad KNN ($k=10$) & 13.6 & 0.849 (0.814--0.884) & 0.501 & 0.759 & 0.163 & $+$0.005 (0.448) \\
 \bottomrule
-\end{tabular}}
+\end{tabular}
 \end{table*}
 
 \FloatBarrier
@@ -470,31 +454,32 @@ The calibration finding replicated closely. On pooled out-of-fold predictions, t
 
 \begin{table*}[!htbp]
 \centering
-\caption{Replication of the evaluation in NHANES 2013--2014 (1815 adults; outcome HbA1c $\geq 5.7\%$), alongside the PIMA results. Cross-validated ROC-AUC is the 5$\times$10-fold mean with Nadeau--Bengio corrected 95\% CI beneath. NHANES $\Delta$AUC is the paired difference from logistic regression on all candidates (Holm-adjusted $p$). Hold-out ROC-AUC has DeLong 95\% CI beneath; the last column is stacking + RFECV minus the comparator (Holm-adjusted DeLong $p$). The PIMA model was not applied to NHANES, because predictors and outcome differ.}
+\caption{Replication of the evaluation in NHANES 2013--2014 (1815 adults; outcome HbA1c $\geq 5.7\%$), alongside the PIMA results. Cross-validated ROC-AUC is the 5$\times$10-fold mean with Nadeau--Bengio corrected 95\% CI beneath. NHANES $\Delta$AUC is the paired difference from logistic regression on all candidates (Holm-adjusted $p$). Hold-out ROC-AUC ($n = 363$, 110 events) has DeLong 95\% CI beneath; the last column is stacking + RFECV minus the comparator (Holm-adjusted DeLong $p$). The PIMA model was not applied to NHANES, because predictors and outcome differ. LR, logistic regression; RF, random forest.}
 \label{tab:external}
-\resizebox{\textwidth}{!}{%
+\scriptsize
+\setlength{\tabcolsep}{3pt}
 \begin{tabular}{lccccc}
 \toprule
- & PIMA & \multicolumn{2}{c}{NHANES cross-validation} & \multicolumn{2}{c}{NHANES hold-out ($n=363$)} \\
+ & PIMA & \multicolumn{2}{c}{NHANES cross-validation} & \multicolumn{2}{c}{NHANES hold-out} \\
 \cmidrule(lr){2-2}\cmidrule(lr){3-4}\cmidrule(lr){5-6}
-Model & CV ROC-AUC & ROC-AUC & $\Delta$AUC vs LR (adj.\ $p$) & ROC-AUC & $\Delta$AUC (adj.\ $p$) \\
+Model & CV ROC-AUC & ROC-AUC & \begin{tabular}[b]{@{}c@{}}$\Delta$AUC\\(adj.\ $p$)\end{tabular} & ROC-AUC & \begin{tabular}[b]{@{}c@{}}$\Delta$AUC\\(adj.\ $p$)\end{tabular} \\
 \midrule
-Stacking + RFECV & 0.843 & 0.785 & -0.001 (1.000) & 0.783 & -- \\
+Stacking + RFECV & 0.843 & 0.785 & $-$0.001 (1.000) & 0.783 & -- \\
  & {\scriptsize\color{gray}(0.809--0.878)} & {\scriptsize\color{gray}(0.758--0.812)} &  & {\scriptsize\color{gray}(0.736--0.831)} &  \\[2pt]
-Stacking & 0.846 & 0.786 & -0.001 (1.000) & 0.783 & 0.000 (1.000) \\
+Stacking & 0.846 & 0.786 & $-$0.001 (1.000) & 0.783 & 0.000 (1.000) \\
  & {\scriptsize\color{gray}(0.812--0.880)} & {\scriptsize\color{gray}(0.761--0.811)} &  & {\scriptsize\color{gray}(0.736--0.831)} &  \\[2pt]
-Logistic regression & 0.842 & 0.787 & reference & 0.777 & +0.006 (1.000) \\
+LR & 0.842 & 0.787 & reference & 0.777 & $+$0.006 (1.000) \\
  & {\scriptsize\color{gray}(0.809--0.875)} & {\scriptsize\color{gray}(0.763--0.811)} &  & {\scriptsize\color{gray}(0.729--0.825)} &  \\[2pt]
-LR + LR-ranked RFECV & 0.840 & 0.789 & +0.003 (1.000) & 0.783 & 0.000 (1.000) \\
- & {\scriptsize\color{gray}(0.808--0.873)} & {\scriptsize\color{gray}(0.764--0.814)} &  & {\scriptsize\color{gray}(0.735--0.830)} &  \\[2pt]
-Random forest + RFECV & 0.831 & 0.755 & -0.032 (0.006) & 0.766 & +0.017 (0.719) \\
+LR + & 0.840 & 0.789 & $+$0.003 (1.000) & 0.783 & 0.000 (1.000) \\
+\quad LR-ranked RFECV & {\scriptsize\color{gray}(0.808--0.873)} & {\scriptsize\color{gray}(0.764--0.814)} &  & {\scriptsize\color{gray}(0.735--0.830)} &  \\[2pt]
+RF + RFECV & 0.831 & 0.755 & $-$0.032 (0.006) & 0.766 & $+$0.017 (0.719) \\
  & {\scriptsize\color{gray}(0.797--0.866)} & {\scriptsize\color{gray}(0.725--0.784)} &  & {\scriptsize\color{gray}(0.717--0.816)} &  \\[2pt]
-XGBoost + RFECV & 0.820 & 0.757 & -0.029 (0.003) & 0.776 & +0.007 (1.000) \\
+XGBoost + RFECV & 0.820 & 0.757 & $-$0.029 (0.003) & 0.776 & $+$0.007 (1.000) \\
  & {\scriptsize\color{gray}(0.785--0.854)} & {\scriptsize\color{gray}(0.730--0.784)} &  & {\scriptsize\color{gray}(0.728--0.825)} &  \\[2pt]
-SVM & 0.840 & 0.755 & -0.031 (<0.001) & 0.766 & +0.018 (0.743) \\
+SVM & 0.840 & 0.755 & $-$0.031 (<0.001) & 0.766 & $+$0.018 (0.743) \\
  & {\scriptsize\color{gray}(0.802--0.878)} & {\scriptsize\color{gray}(0.732--0.779)} &  & {\scriptsize\color{gray}(0.714--0.817)} &  \\[2pt]
 \bottomrule
-\end{tabular}}
+\end{tabular}
 \end{table*}
 
 \FloatBarrier
@@ -503,7 +488,7 @@ In PIMA, glucose dominated the SHAP explanations of the stacking + RFECV pipelin
 
 \begin{figure}[!htbp]
   \centering
-  \includegraphics[width=0.8\linewidth]{fig7_shap.pdf}
+  \includegraphics{fig7_shap.pdf}
   \caption{SHAP values of the hold-out predictions of the stacking + RFECV pipeline, expressed in the eight raw clinical inputs. Each point is one patient; colour shows the feature value.}
   \label{fig:shap}
 \end{figure}

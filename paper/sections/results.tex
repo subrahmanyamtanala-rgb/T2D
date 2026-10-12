@@ -10,22 +10,21 @@ The common RFECV subset changed mean ROC-AUC by at most 0.003 for every learner 
 
 \begin{table*}[!htbp]
 \centering
-\caption{Development-set performance from 5$\times$10-fold repeated cross-validation (50 folds; $n = 614$). Values are means; Nadeau--Bengio corrected 95\% confidence intervals are shown in grey beneath. $\Delta$AUC is the mean paired difference from logistic regression on all features, with Holm-adjusted corrected resampled $t$-test $p$-values in brackets. ``+ RFECV'' denotes the common, random-forest-ranked RFECV subset. Sensitivity and specificity use a 0.5 threshold.}
+\caption{Development-set performance from 5$\times$10-fold repeated cross-validation (50 folds; $n = 614$). Values are means; Nadeau--Bengio corrected 95\% confidence intervals for ROC-AUC are shown in grey (intervals for every metric are in Supplementary Table~S1). $\Delta$AUC is the mean paired difference from logistic regression on all features, with Holm-adjusted corrected resampled $t$-test $p$-values in brackets. ``+ RFECV'' denotes the common, random-forest-ranked RFECV subset. Feat., number of input features (mean over folds after RFECV); Sens., sensitivity; Spec., specificity. Sensitivity and specificity use a 0.5 threshold.}
 \label{tab:cv}
-\footnotesize
-\setlength{\tabcolsep}{4pt}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{lrcccccl}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lrr@{\,}lccccr@{\,}l}
 \toprule
-Model & Features & ROC-AUC & MCC & Sens. & Spec. & Brier & $\Delta$AUC (adj.\ $p$) \\
+Model & Feat. & \multicolumn{2}{c}{ROC-AUC (95\% CI)} & MCC & Sens. & Spec. & Brier & \multicolumn{2}{c}{$\Delta$AUC (adj.\ $p$)} \\
 \midrule
 \input{tables/tab_cv.tex}
-\end{tabular}}
+\end{tabular}
 \end{table*}
 
 \begin{figure}[!htbp]
   \centering
-  \includegraphics[width=0.75\linewidth]{fig2_cv_auc.pdf}
+  \includegraphics{fig2_cv_auc.pdf}
   \caption{Cross-validated ROC-AUC of each learner with all 16 features (open circles) and with the common RFECV subset (filled circles). Bars are Nadeau--Bengio corrected 95\% confidence intervals over 50 folds. The dashed line marks logistic regression on all features. The stacking ensemble is highlighted.}
   \label{fig:cv}
 \end{figure}
@@ -38,7 +37,7 @@ Coefficient-ranked RFECV for logistic regression preferred a different, smaller 
 
 \begin{figure}[!htbp]
   \centering
-  \includegraphics[width=0.75\linewidth]{fig3_selection.pdf}
+  \includegraphics{fig3_selection.pdf}
   \caption{Proportion of the 50 outer cross-validation folds in which each candidate feature was retained by random-forest-ranked RFECV (the common protocol) and by coefficient-ranked RFECV for logistic regression. Engineered features are shown in italics.}
   \label{fig:selection}
 \end{figure}
@@ -49,22 +48,21 @@ On the 154 hold-out patients (Table~\ref{tab:holdout}, Fig.~\ref{fig:rocpr}), th
 
 \begin{table*}[!htbp]
 \centering
-\caption{Hold-out performance ($n = 154$, 54 with diabetes) at a 0.5 threshold. 95\% confidence intervals are shown in grey beneath: DeLong for ROC-AUC, percentile bootstrap (2000 resamples) otherwise. AP, average precision. The last column gives the ROC-AUC difference of stacking + RFECV minus the comparator, with Holm-adjusted DeLong $p$-values.}
+\caption{Hold-out performance ($n = 154$, 54 with diabetes) at a 0.5 threshold. 95\% confidence intervals are shown in grey beneath: DeLong for ROC-AUC, percentile bootstrap (2000 resamples) otherwise. F1 and average precision are in Supplementary Table~S2. The last column gives the ROC-AUC difference of stacking + RFECV minus the comparator, with Holm-adjusted DeLong $p$-values.}
 \label{tab:holdout}
-\footnotesize
-\setlength{\tabcolsep}{3.5pt}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{lccccccl}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lccccl}
 \toprule
-Model & ROC-AUC & Sensitivity & Specificity & MCC & F1 & AP & $\Delta$AUC (adj.\ $p$) \\
+Model & ROC-AUC & Sensitivity & Specificity & MCC & $\Delta$AUC (adj.\ $p$) \\
 \midrule
 \input{tables/tab_holdout.tex}
-\end{tabular}}
+\end{tabular}
 \end{table*}
 
 \begin{figure*}[!htbp]
   \centering
-  \includegraphics[width=0.9\textwidth]{fig4_roc_pr.pdf}
+  \includegraphics{fig4_roc_pr.pdf}
   \caption{Hold-out ROC (a) and precision--recall (b) curves for stacking + RFECV, logistic regression and random forest + RFECV. The dotted lines show chance performance and the outcome prevalence (0.35).}
   \label{fig:rocpr}
 \end{figure*}
@@ -77,7 +75,7 @@ All class-weighted models overestimated risk (Table~\ref{tab:calibration}, Fig.~
 \centering
 \caption{Calibration. Development values use pooled out-of-fold predictions ($614 \times 5$); hold-out Brier scores have bootstrap 95\% CIs. Ideal values: intercept 0, slope 1.}
 \label{tab:calibration}
-\footnotesize
+\scriptsize
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{lcccccc}
 \toprule
@@ -91,7 +89,7 @@ Model & Brier & Intercept & Slope & Brier (95\% CI) & Intercept & Slope \\
 
 \begin{figure*}[!htbp]
   \centering
-  \includegraphics[width=0.9\textwidth]{fig5_calibration.pdf}
+  \includegraphics{fig5_calibration.pdf}
   \caption{Calibration curves (deciles of predicted risk) on (a) pooled development-set out-of-fold predictions and (b) the hold-out set (quintiles). Points below the diagonal indicate overestimated risk.}
   \label{fig:calibration}
 \end{figure*}
@@ -106,20 +104,19 @@ In this internal decision-curve analysis (Fig.~\ref{fig:dca}), all three models 
 \centering
 \caption{Sensitivity-targeted operating points. Thresholds were chosen on development-set out-of-fold predictions and applied unchanged to the hold-out set. Bootstrap 95\% CIs are shown in grey beneath. ``Flagged'' is the proportion of hold-out patients referred for confirmatory testing.}
 \label{tab:thresholds}
-\footnotesize
+\scriptsize
 \setlength{\tabcolsep}{4pt}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{lccccccc}
+\begin{tabular}{ccccccc}
 \toprule
-Model & Target & Threshold & Sensitivity & Specificity & PPV & NPV & Flagged \\
+Target & Threshold & Sensitivity & Specificity & PPV & NPV & Flagged \\
 \midrule
-\input{tables/tab_thresholds.tex}
-\end{tabular}}
+\tableinput{tables/tab_thresholds.tex}
+\end{tabular}
 \end{table*}
 
 \begin{figure}[!htbp]
   \centering
-  \includegraphics[width=0.6\linewidth]{fig6_dca.pdf}
+  \includegraphics{fig6_dca.pdf}
   \caption{Decision curves on the hold-out set. Net benefit is shown against the threshold probability at which a patient would be referred for confirmatory testing.}
   \label{fig:dca}
 \end{figure}
@@ -136,17 +133,18 @@ The calibration finding replicated closely. On pooled out-of-fold predictions, t
 
 \begin{table*}[!htbp]
 \centering
-\caption{Replication of the evaluation in NHANES 2013--2014 (1815 adults; outcome HbA1c $\geq 5.7\%$), alongside the PIMA results. Cross-validated ROC-AUC is the 5$\times$10-fold mean with Nadeau--Bengio corrected 95\% CI beneath. NHANES $\Delta$AUC is the paired difference from logistic regression on all candidates (Holm-adjusted $p$). Hold-out ROC-AUC has DeLong 95\% CI beneath; the last column is stacking + RFECV minus the comparator (Holm-adjusted DeLong $p$). The PIMA model was not applied to NHANES, because predictors and outcome differ.}
+\caption{Replication of the evaluation in NHANES 2013--2014 (1815 adults; outcome HbA1c $\geq 5.7\%$), alongside the PIMA results. Cross-validated ROC-AUC is the 5$\times$10-fold mean with Nadeau--Bengio corrected 95\% CI beneath. NHANES $\Delta$AUC is the paired difference from logistic regression on all candidates (Holm-adjusted $p$). Hold-out ROC-AUC ($n = 363$, 110 events) has DeLong 95\% CI beneath; the last column is stacking + RFECV minus the comparator (Holm-adjusted DeLong $p$). The PIMA model was not applied to NHANES, because predictors and outcome differ. LR, logistic regression; RF, random forest.}
 \label{tab:external}
-\resizebox{\textwidth}{!}{%
+\scriptsize
+\setlength{\tabcolsep}{3pt}
 \begin{tabular}{lccccc}
 \toprule
- & PIMA & \multicolumn{2}{c}{NHANES cross-validation} & \multicolumn{2}{c}{NHANES hold-out ($n=363$)} \\
+ & PIMA & \multicolumn{2}{c}{NHANES cross-validation} & \multicolumn{2}{c}{NHANES hold-out} \\
 \cmidrule(lr){2-2}\cmidrule(lr){3-4}\cmidrule(lr){5-6}
-Model & CV ROC-AUC & ROC-AUC & $\Delta$AUC vs LR (adj.\ $p$) & ROC-AUC & $\Delta$AUC (adj.\ $p$) \\
+Model & CV ROC-AUC & ROC-AUC & \begin{tabular}[b]{@{}c@{}}$\Delta$AUC\\(adj.\ $p$)\end{tabular} & ROC-AUC & \begin{tabular}[b]{@{}c@{}}$\Delta$AUC\\(adj.\ $p$)\end{tabular} \\
 \midrule
 \input{tables/tab_external.tex}
-\end{tabular}}
+\end{tabular}
 \end{table*}
 
 \FloatBarrier
@@ -155,7 +153,7 @@ In PIMA, glucose dominated the SHAP explanations of the stacking + RFECV pipelin
 
 \begin{figure}[!htbp]
   \centering
-  \includegraphics[width=0.8\linewidth]{fig7_shap.pdf}
+  \includegraphics{fig7_shap.pdf}
   \caption{SHAP values of the hold-out predictions of the stacking + RFECV pipeline, expressed in the eight raw clinical inputs. Each point is one patient; colour shows the feature value.}
   \label{fig:shap}
 \end{figure}

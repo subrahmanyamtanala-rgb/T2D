@@ -20,6 +20,10 @@
 \usepackage{rotating}
 \usepackage[section]{placeins}
 \usepackage{orcidlink}
+\usepackage{microtype}
+\setlength{\emergencystretch}{1.5em}
+% Expandable input for generated table bodies that begin with \multicolumn.
+\makeatletter\newcommand{\tableinput}[1]{\@@input #1 }\makeatother
 \input{journal}
 
 \graphicspath{{figures/}}

@@ -12,6 +12,8 @@
 \usetikzlibrary{arrows.meta,positioning,fit,backgrounds}
 \usepackage[hidelinks]{hyperref}
 \usepackage{orcidlink}
+\usepackage{microtype}
+\setlength{\emergencystretch}{1.5em}
 \input{journal}
 \usepackage{xurl}
 \usepackage[font=small,labelfont=bf]{caption}
@@ -100,13 +102,14 @@ The calibration intercept is estimated from $\operatorname{logit} P(y=1) = a + \
 
 \section{Full cross-validated results}
 
+\newgeometry{margin=1.6cm}
 \begin{landscape}
 \begin{table}[p]
 \centering
 \caption{All 23 configurations from 5$\times$10-fold repeated cross-validation on the development set ($n=614$). Means with Nadeau--Bengio corrected 95\% CIs beneath. ``+ RFECV'' is the common random-forest-ranked RFECV subset. The last two columns give the unadjusted and Holm-adjusted corrected resampled $t$-test $p$-values for the ROC-AUC difference from logistic regression on all features. Threshold-based metrics use 0.5.}
 \label{tab:s-cv}
 \scriptsize
-\setlength{\tabcolsep}{3pt}
+\setlength{\tabcolsep}{2.5pt}
 \begin{tabular}{lrcccccccccrr}
 \toprule
 Model & Feat. & Acc. & Bal.\ acc. & Prec. & Sens. & Spec. & F1 & MCC & ROC-AUC & Brier & $p$ & $p_{\mathrm{Holm}}$ \\
@@ -115,16 +118,18 @@ Model & Feat. & Acc. & Bal.\ acc. & Prec. & Sens. & Spec. & F1 & MCC & ROC-AUC &
 \end{tabular}
 \end{table}
 \end{landscape}
+\restoregeometry
 
 \section{Full hold-out results}
 
+\newgeometry{margin=1.6cm}
 \begin{landscape}
 \begin{table}[p]
 \centering
 \caption{All hold-out metrics ($n=154$, 54 events) at a 0.5 threshold. 95\% CIs beneath: DeLong for ROC-AUC, percentile bootstrap (2000 resamples) otherwise. AP, average precision; Int., calibration intercept; Slope, calibration slope.}
 \label{tab:s-holdout}
-\footnotesize
-\setlength{\tabcolsep}{3.5pt}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
 \begin{tabular}{lcccccccccccc}
 \toprule
 Model & Acc. & Bal.\ acc. & Prec. & Sens. & Spec. & F1 & MCC & ROC-AUC & Brier & AP & Int. & Slope \\
@@ -133,6 +138,7 @@ Model & Acc. & Bal.\ acc. & Prec. & Sens. & Spec. & F1 & MCC & ROC-AUC & Brier &
 \end{tabular}
 \end{table}
 \end{landscape}
+\restoregeometry
 
 \section{Feature-selection frequencies}
 
@@ -262,10 +268,10 @@ File & SHA-256 \\
 
 \paragraph{Eligibility} Of 2909 OGTT-subsample records, 2345 had a 2-h glucose value, 1858 of these were aged $\geq 21$ years and 1815 also had fasting insulin and HbA1c. Diastolic blood pressure was the mean of the valid readings; a recorded value of 0~mmHg was treated as missing (the SAS transport format stores it as a value of order $10^{-79}$). BMI was missing for 9 and blood pressure for 41 participants; both were imputed inside the validation folds.
 
-\paragraph{Cohort and outcome} 1815 adults (929 women), 551 with HbA1c $\geq 5.7\%$ (30.4\%) and 58 with HbA1c $\geq 6.5\%$. The derived file \texttt{data/nhanes\_2013\_2014\_ogtt.csv} has SHA-256 \texttt{eb56eb115abe320ecba06f12fb548c776a67778dd7d605c71a78996570f2f640}; a unit test checks that it is rebuilt exactly from the six files.
+\paragraph{Cohort and outcome} 1815 adults (929 women), 551 with HbA1c $\geq 5.7\%$ (30.4\%) and 58 with HbA1c $\geq 6.5\%$. The derived file \texttt{data/nhanes\_2013\_2014\_ogtt.csv} has SHA-256 \nolinkurl{eb56eb115abe320ecba06f12fb548c776a67778dd7d605c71a78996570f2f640}; a unit test checks that it is rebuilt exactly from the six files.
 
 \paragraph{Earlier processed copy} An earlier version of this analysis used a third-party processed copy (\url{https://github.com/ChintanaL/diabetes-prediction-using-nhanes-dataset}, commit \texttt{074e664}), because the CDC site could not be reached from the analysis environment. Its laboratory file covers only 1454 OGTT participants and yielded 902 of the 1815 eligible adults. For these 902 adults every sex, age, BMI, glucose, insulin and HbA1c value equals the official one; diastolic blood pressure differs because the copy used only the second reading. All results reported here use the official files.
 
-\paragraph{Reproduction} \texttt{python -m t2d.nhanes --cdc data/nhanes\_cdc} rebuilds the cohort. The analysis is then re-run with \texttt{python -m t2d.analysis --dataset nhanes --output-dir results/external\_nhanes} and \texttt{--stage cv}, \texttt{--stage summarize} and \texttt{--stage holdout}.
+\paragraph{Reproduction} \texttt{python -m t2d.nhanes --cdc data/nhanes\_cdc} rebuilds the cohort. The analysis is then re-run with \nolinkurl{python -m t2d.analysis --dataset nhanes --output-dir results/external_nhanes} and \texttt{--stage cv}, \texttt{--stage summarize} and \texttt{--stage holdout}.
 
 \end{document}

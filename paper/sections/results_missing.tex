@@ -6,11 +6,12 @@ The conclusions were robust to the imputation strategy (Table~\ref{tab:missing})
 \centering
 \caption{Missing-data sensitivity analysis on the development set (10-fold cross-validation repeated twice; 20 folds). ROC-AUC values are means with corrected 95\% CIs. $\Delta$AUC is the paired difference from median imputation for the same model, with the corrected resampled $t$-test $p$-value.}
 \label{tab:missing}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{llcccccl}
+\scriptsize
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{lcccccl}
 \toprule
-Model & Imputation & Features & ROC-AUC (95\% CI) & MCC & Sens. & Brier & $\Delta$AUC ($p$) \\
+Imputation & Features & ROC-AUC (95\% CI) & MCC & Sens. & Brier & $\Delta$AUC ($p$) \\
 \midrule
-\input{tables/tab_missing.tex}
-\end{tabular}}
+\tableinput{tables/tab_missing.tex}
+\end{tabular}
 \end{table*}

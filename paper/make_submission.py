@@ -22,7 +22,7 @@ def inline(path):
             target = target.with_suffix(".tex")
         return inline(target).rstrip("\n")
 
-    return re.sub(r"\\input\{([^}]+)\}", repl, text)
+    return re.sub(r"\\(?:input|tableinput)\{([^}]+)\}", repl, text)
 
 
 def main():
