@@ -127,8 +127,31 @@ Model & Target & Threshold & Sensitivity & Specificity & PPV & NPV & Flagged \\
 \input{sections/results_missing}
 
 \FloatBarrier
+\subsection{Replication in NHANES 2013--2014}
+The main findings replicated in the independent NHANES cohort (Table~\ref{tab:external}). Overall discrimination was lower than in PIMA, as expected for an outcome not defined by the glucose predictor. In 5$\times$10-fold cross-validation, logistic regression again matched or exceeded the stack: 0.745 (95\% CI 0.702--0.789) on all 13 candidates and 0.751 (0.710--0.792) with its own coefficient-ranked RFECV, compared with 0.738 (0.695--0.782) for stacking + RFECV. The difference between stacking + RFECV and logistic regression was $-0.007$ (Holm-adjusted $p = 1.00$). Tree ensembles discriminated less well than logistic regression in this cohort (random forest + RFECV 0.703, XGBoost + RFECV 0.698), and LightGBM was significantly worse after adjustment. RFECV reduced the candidates from 13 to a mean of 7.2 without loss of discrimination. It kept the engineered \texttt{Glucose\_BMI}, \texttt{Glucose\_Age} and \texttt{BMI\_Age} in every fold, and \texttt{HOMA\_IR\_surrogate} in 98\%.
+
+On the 181-patient NHANES hold-out set (58 events), stacking + RFECV reached a ROC-AUC of 0.823 (0.758--0.887), sensitivity 0.776 and specificity 0.699. Logistic regression reached 0.819 (0.754--0.884), and no DeLong comparison was significant (smallest adjusted $p = 0.49$). The hold-out ROC-AUCs were higher than the cross-validated estimates. With 58 events this is within split-to-split variation, so we base inference on the 50-fold estimates.
+
+The calibration finding replicated closely. On pooled out-of-fold predictions, the calibration intercept was $-0.747$ for stacking + RFECV and $-0.761$ for logistic regression. The logit of the NHANES development-set prevalence is $-0.76$, so the offset again matched the shift expected from balanced class weighting. The calibration slope of the stack was 0.995. The unweighted, Platt-calibrated SVM was again well calibrated (intercept $-0.011$, slope 1.003). In SHAP attributions, age, 2-h glucose and BMI dominated (mean $|\mathrm{SHAP}|$ 0.124, 0.065 and 0.060).
+
+\begin{table*}[!htbp]
+\centering
+\caption{Replication of the evaluation in NHANES 2013--2014 (902 adults; outcome HbA1c $\geq 5.7\%$), alongside the PIMA results. Cross-validated ROC-AUC is the 5$\times$10-fold mean with Nadeau--Bengio corrected 95\% CI beneath. NHANES $\Delta$AUC is the paired difference from logistic regression on all candidates (Holm-adjusted $p$). Hold-out ROC-AUC has DeLong 95\% CI beneath; the last column is stacking + RFECV minus the comparator (Holm-adjusted DeLong $p$). The PIMA model was not applied to NHANES, because predictors and outcome differ.}
+\label{tab:external}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lccccc}
+\toprule
+ & PIMA & \multicolumn{2}{c}{NHANES cross-validation} & \multicolumn{2}{c}{NHANES hold-out ($n=181$)} \\
+\cmidrule(lr){2-2}\cmidrule(lr){3-4}\cmidrule(lr){5-6}
+Model & CV ROC-AUC & ROC-AUC & $\Delta$AUC vs LR (adj.\ $p$) & ROC-AUC & $\Delta$AUC (adj.\ $p$) \\
+\midrule
+\input{tables/tab_external.tex}
+\end{tabular}}
+\end{table*}
+
+\FloatBarrier
 \subsection{Explanation of predictions}
-Glucose dominated the SHAP explanations of the stacking + RFECV pipeline (mean $|\mathrm{SHAP}| = 0.170$ on the probability scale), followed by BMI (0.074), age (0.055), the diabetes pedigree function (0.038) and pregnancies (0.028) (Fig.~\ref{fig:shap}). Insulin, skin-fold thickness and blood pressure contributed little (at most 0.015). Higher glucose, BMI, age and pedigree values consistently increased the predicted probability. These inputs contributed most to the model's predictions, in directions that agree with established risk factors; as model attributions, they do not measure causal effects. Because the outcome itself is largely defined by 2-h post-load glucose, the dominance of glucose in particular should not be interpreted as evidence of independent causal importance.
+In PIMA, glucose dominated the SHAP explanations of the stacking + RFECV pipeline (mean $|\mathrm{SHAP}| = 0.170$ on the probability scale), followed by BMI (0.074), age (0.055), the diabetes pedigree function (0.038) and pregnancies (0.028) (Fig.~\ref{fig:shap}). Insulin, skin-fold thickness and blood pressure contributed little (at most 0.015). Higher glucose, BMI, age and pedigree values consistently increased the predicted probability. These inputs contributed most to the model's predictions, in directions that agree with established risk factors; as model attributions, they do not measure causal effects. Because the outcome itself is largely defined by 2-h post-load glucose, the dominance of glucose in particular should not be interpreted as evidence of independent causal importance.
 
 \begin{figure}[!htbp]
   \centering

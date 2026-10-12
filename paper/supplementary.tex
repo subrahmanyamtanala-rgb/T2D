@@ -242,4 +242,14 @@ Fold-level metrics, out-of-fold predictions, hold-out predictions and SHAP value
 \end{itemize}
 The Platt calibration of the SVM uses deterministic, unshuffled internal folds. $k$-NN, naive Bayes and median or $k$-NN imputation are deterministic.
 
+\section{NHANES 2013--2014 replication cohort}
+
+\paragraph{Source} The official CDC data files could not be downloaded from the analysis environment. The cohort was built from the public repository \url{https://github.com/ChintanaL/diabetes-prediction-using-nhanes-dataset} (commit \texttt{074e664}), which contains processed extracts of the 2013--2014 public-use files: \texttt{labs\_new.csv} (OGTT glucose \texttt{LBXGLT}, insulin \texttt{LBXIN}, HbA1c \texttt{LBXGH}), \texttt{demographic\_new.csv} (sex, age) and \texttt{examination\_full.csv} (BMI, diastolic blood pressure). Respondent identifiers range from 73557 to 83731, the 2013--2014 cycle.
+
+\paragraph{Removal of imputed values} The repository's author had imputed missing laboratory and examination values. Such values do not match NHANES' published resolution: for example, 280 glucose values equal 115.5503\ldots\ and 39 insulin values equal 12.4658\ldots. We kept glucose and diastolic blood pressure only if integer, insulin only with at most two decimals, and HbA1c and BMI only with at most one decimal; all other values were set to missing. Of 1454 laboratory records, 1144 had genuine glucose, insulin and HbA1c values, and 902 of these were aged $\geq 21$ years. BMI was missing for 3 and blood pressure for 30 participants; both were imputed inside the validation folds.
+
+\paragraph{Cohort and outcome} 902 adults (456 women), 288 with HbA1c $\geq 5.7\%$ (31.9\%). The derived file \texttt{data/nhanes\_2013\_2014\_ogtt.csv} has SHA-256 \texttt{957039e34efbd8a8c0965f14790cd2b2dbb83df8609433b08df03131c4406186}.
+
+\paragraph{Regenerating from the official files} \texttt{python -m t2d.nhanes --cdc <dir>} builds the same cohort from the CDC files \texttt{DEMO\_H}, \texttt{BMX\_H}, \texttt{BPX\_H}, \texttt{OGTT\_H}, \texttt{INS\_H} and \texttt{GHB\_H} (diastolic pressure as the mean of the non-zero readings). The analysis is then re-run with \texttt{python -m t2d.analysis --dataset nhanes --stage cv} and \texttt{--stage holdout}. Results are in \texttt{results/external\_nhanes/}.
+
 \end{document}

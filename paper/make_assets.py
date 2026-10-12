@@ -321,10 +321,31 @@ def table_supp_selection(res, out):
     (out / "supp_selection.tex").write_text("\n".join(rows) + "\n\\bottomrule\n")
 
 
+def table_external(res, ext, out):
+    """PIMA vs NHANES side by side for the key configurations."""
+    pc = pd.read_csv(res / "cv_summary.csv")
+    nc = pd.read_csv(ext / "cv_summary.csv")
+    nh = pd.read_csv(ext / "holdout_metrics_ci.csv").set_index("model")
+    nd = pd.read_csv(ext / "holdout_delong.csv").set_index("comparator")
+    rows = []
+    for key, (m, r) in {"stacking_rfecv": ("stacking", True), "stacking": ("stacking", False), "lr": ("lr", False),
+                        "lr_own_rfecv": ("lr_own_rfecv", True), "rf_rfecv": ("rf", True), "xgb_rfecv": ("xgb", True),
+                        "svm": ("svm", False)}.items():
+        a = pc[(pc.model == m) & (pc.rfecv == r)].iloc[0]
+        b = nc[(nc.model == m) & (nc.rfecv == r)].iloc[0]
+        h = nh.loc[key]
+        test = "--" if key == "stacking_rfecv" else f"{signed(nd.loc[key, 'auc_diff'])} ({pfmt(nd.loc[key, 'p_holm'])})"
+        ref = "reference" if key == "lr" else f"{signed(b.roc_auc_diff_vs_lr)} ({pfmt(b.roc_auc_p_holm)})"
+        rows.append(f"{LABEL[key]} & {a.roc_auc_mean:.3f} & {b.roc_auc_mean:.3f} & {ref} & {h.roc_auc:.3f} & {test}" + r" \\")
+        rows.append(cirow("", lohi(a.roc_auc_lo, a.roc_auc_hi), lohi(b.roc_auc_lo, b.roc_auc_hi), "", lohi(h.roc_auc_lo, h.roc_auc_hi), ""))
+    (out / "tab_external.tex").write_text("\n".join(rows) + "\n\\bottomrule\n")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--results", type=Path, default=Path("results/revision"))
     ap.add_argument("--out", type=Path, default=Path("paper"))
+    ap.add_argument("--external", type=Path, default=Path("results/external_nhanes"))
     args = ap.parse_args()
     figs, tabs = args.out / "figures", args.out / "tables"
     figs.mkdir(parents=True, exist_ok=True)
@@ -335,6 +356,8 @@ def main():
         fn(args.results, tabs)
     for fn in (table_supp_cv, table_supp_holdout, table_supp_selection):
         fn(args.results, tabs)
+    if (args.external / "holdout_delong.csv").exists():
+        table_external(args.results, args.external, tabs)
     if (args.results / "missing_summary.csv").exists():
         table_missing(args.results, tabs)
     print("assets written to", args.out)

@@ -112,6 +112,14 @@ S.~M. Lundberg, S.-I. Lee, A unified approach to interpreting model
   predictions, in: Advances in Neural Information Processing Systems 30, 2017,
   pp. 4765--4774.
 
+\bibitem{nhanes2013}
+{Centers for Disease Control and Prevention, National Center for Health
+  Statistics}, National health and nutrition examination survey ({NHANES})
+  2013--2014,
+  \url{https://wwwn.cdc.gov/nchs/nhanes/continuousnhanes/default.aspx?BeginYear=2013},
+  public-use data files DEMO\_H, BMX\_H, BPX\_H, OGTT\_H, INS\_H and GHB\_H
+  (2016).
+
 \bibitem{knowler1978}
 W.~C. Knowler, P.~H. Bennett, R.~F. Hamman, M.~Miller, Diabetes incidence and
   prevalence in {P}ima {I}ndians: a 19-fold greater incidence than in
